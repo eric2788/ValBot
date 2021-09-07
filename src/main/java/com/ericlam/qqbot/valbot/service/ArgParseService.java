@@ -29,11 +29,21 @@ public class ArgParseService {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T tryParse(String str, Class<T> type){
+    public <T> T tryParse(String str, Class<T> type) throws ArgumentParseException {
         if (parserMap.containsKey(type)){
-            return (T) parserMap.get(type).apply(str);
+            try {
+                return (T) parserMap.get(type).apply(str);
+            }catch (RuntimeException e){
+                throw new ArgumentParseException(e.getMessage());
+            }
         }else{
             throw new IllegalStateException("unknown type to parse: "+type);
+        }
+    }
+
+    public static class ArgumentParseException extends Exception{
+        public ArgumentParseException(String message) {
+            super(message);
         }
     }
 }

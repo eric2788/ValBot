@@ -15,20 +15,18 @@ public class YesNoDataService {
 
     private final Logger logger;
     private final Map<String, Boolean> answers;
-    private final ValDataService dataService;
 
     public YesNoDataService(ValDataService dataService, Logger logger) {
-        this.dataService = dataService;
         this.logger = logger;
         this.answers = dataService.getData().answers;
     }
 
-    public boolean isValidQuestion(String question) {
-        return questionPattern.matcher(question).find();
+    public boolean isInvalidQuestion(String question) {
+        return !questionPattern.matcher(question).find();
     }
 
     public String getYesNoAnswer(String question) {
-        if (!isValidQuestion(question)) {
+        if (isInvalidQuestion(question)) {
             return null;
         }
         question = removeQuestionMark(question);

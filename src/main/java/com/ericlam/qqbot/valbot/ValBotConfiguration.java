@@ -3,6 +3,7 @@ package com.ericlam.qqbot.valbot;
 import com.ericlam.qqbot.valbot.command.CheckCommand;
 import com.ericlam.qqbot.valbot.command.GroupChatCommand;
 import com.ericlam.qqbot.valbot.command.SpeakCommand;
+import com.ericlam.qqbot.valbot.command.live.BLiveCommand;
 import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
 import com.ericlam.qqbot.valbot.command.yesno.YesNoCommand;
 import com.ericlam.qqbot.valbot.response.ChatResponse;
@@ -19,11 +20,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.mikuac.shiro.core.Bot;
+import com.mikuac.shiro.core.BotContainer;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -102,7 +106,8 @@ public class ValBotConfiguration {
                 SpeakCommand.class,
                 YesNoCommand.class,
                 CustomResponseCommand.class,
-                CheckCommand.class
+                CheckCommand.class,
+                BLiveCommand.class
         );
     }
 

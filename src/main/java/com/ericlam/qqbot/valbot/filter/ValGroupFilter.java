@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,13 +17,17 @@ public class ValGroupFilter extends BotPlugin {
 
     private final Logger Logger;
 
+
+    @Value("${val.group}")
+    private long groupId;
+
     public ValGroupFilter(Logger Logger) {
         this.Logger = Logger;
     }
 
     @Override
     public int onGroupMessage(@NotNull Bot bot, @NotNull GroupMessageEvent event) {
-        if (event.getGroupId() != 466353663) {
+        if (event.getGroupId() != groupId) {
             Logger.info("非瓦群，已无视");
             return MESSAGE_BLOCK;
         }

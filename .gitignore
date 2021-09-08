@@ -2,3 +2,4 @@
 /target/
 /.idea/
 /data/
+/src/main/resources/secret.properties

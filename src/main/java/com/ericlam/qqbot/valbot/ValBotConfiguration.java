@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -42,7 +43,6 @@ import java.util.List;
 
 @EnableScheduling
 @Configuration
-@EnableAutoConfiguration
 public class ValBotConfiguration {
 
     private final File folder = new File("data");

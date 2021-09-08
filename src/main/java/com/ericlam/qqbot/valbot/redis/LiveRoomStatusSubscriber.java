@@ -35,11 +35,19 @@ public class LiveRoomStatusSubscriber extends BotMessageListener {
     private Logger logger;
 
 
+    @Autowired
+    private BilibiliLiveService liveService;
+
+
     @Override
     public void onRedisMessage(Bot bot, @NotNull Message message, byte[] bytes) {
         String channel = new String(message.getChannel());
         if (!channel.equals("live-room-status")) {
             logger.warn("房间状态订阅 接收了 非 live-room-status 频道的讯息: {}", channel);
+            return;
+        }
+        if (!liveService.isVerBose()) {
+            logger.info("Verbose 為 False, 故不輸出任何狀態訊息。");
             return;
         }
         try {

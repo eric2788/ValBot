@@ -1,5 +1,7 @@
 package com.ericlam.qqbot.valbot.redis;
 
+import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
+import com.ericlam.qqbot.valbot.redis.wshandle.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +15,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+
+import java.util.Map;
 
 
 @ComponentScan("com.ericlam.qqbot.valbot.redis")
@@ -45,6 +49,16 @@ public class RedisConfig {
         RedisTemplate<String, Integer> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
         return template;
+    }
+
+    @Bean("ws-handler")
+    public Map<String, Class<? extends BLiveHandle>> wsHandler(){
+        return Map.of(
+                BLiveWebSocketData.CommandType.LIVE, BroadcastHandle.class,
+                BLiveWebSocketData.CommandType.DANMU_MSG, DanmuHandle.class,
+                BLiveWebSocketData.CommandType.SUPER_CHAT_MESSAGE, SuperChatHandle.class,
+                BLiveWebSocketData.CommandType.INTERACT_WORD, RoomEnterHandle.class
+        );
     }
 
 }

@@ -3,6 +3,7 @@ package com.ericlam.qqbot.valbot.command.yesno;
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.command.GroupChatCommand;
 import com.ericlam.qqbot.valbot.service.ValDataService;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class YesNoCheckCommand implements GroupChatCommand {
         dataService.getData().answers.forEach((q, r) -> {
             builder.append(q).append("=").append(r).append("\n");
         });
-        bot.sendGroupMsg(event.getGroupId(), builder.toString(), true);
+        bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                .builder()
+                .text(builder.toString())
+                .reply(event.getMessageId())
+                .build(), false);
     }
 }

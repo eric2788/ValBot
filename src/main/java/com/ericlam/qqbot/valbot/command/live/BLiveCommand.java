@@ -14,7 +14,10 @@ import java.util.List;
         subCommands = {
                 BLiveListenCommand.class,
                 BLiveTerminateCommand.class,
-                BLiveListeningCommand.class
+                BLiveListeningCommand.class,
+                BLiveCareCommand.class,
+                BLiveUncareCommand.class,
+                BLiveCaringCommand.class
         }
 )
 public class BLiveCommand implements GroupChatCommand {

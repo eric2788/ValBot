@@ -1,5 +1,6 @@
 package com.ericlam.qqbot.valbot.command;
 
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
@@ -40,7 +41,11 @@ public class CheckCommand implements GroupChatCommand {
                 builder.append("加群时间: ").append(toLocalDateTime(member.getJoinTime())).append("\n");
                 builder.append("上次发言时间: ").append(toLocalDateTime(member.getLastSentTime())).append("\n");
                 builder.append("性别: ").append(member.getSex()).append("\n");
-                bot.sendGroupMsg(event.getGroupId(), builder.toString(), true);
+                bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                        .builder()
+                        .text(builder.toString())
+                        .reply(event.getMessageId())
+                        .build(), false);
             }
         });
     }

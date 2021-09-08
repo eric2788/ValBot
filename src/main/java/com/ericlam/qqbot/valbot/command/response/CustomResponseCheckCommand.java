@@ -3,6 +3,7 @@ package com.ericlam.qqbot.valbot.command.response;
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.command.GroupChatCommand;
 import com.ericlam.qqbot.valbot.service.ValDataService;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class CustomResponseCheckCommand implements GroupChatCommand {
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
         StringBuilder builder = new StringBuilder("正在打印所有内容").append("\n");
         dataService.getData().responses.forEach((t, r) -> builder.append(t).append("=").append(r).append("\n"));
-        bot.sendGroupMsg(event.getGroupId(), builder.toString(), true);
+        bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                .builder()
+                .text(builder.toString())
+                .reply(event.getMessageId()).build(), false);
     }
 }

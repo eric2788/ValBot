@@ -5,6 +5,7 @@ import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.command.GroupChatCommand;
 import com.ericlam.qqbot.valbot.service.ArgParseService;
 import com.ericlam.qqbot.valbot.service.YesNoDataService;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,11 @@ public class YesNoSetCommand implements GroupChatCommand {
         }
         var result = Boolean.parseBoolean(args.get(1));
         yesNoDataService.setYesNoAnswer(question, result);
-        bot.sendGroupMsg(event.getGroupId(), MessageFormat.format("已成功设置 {0} 答案为 {1}", question, result), true);
+        String msg = MessageFormat.format("已成功设置 {0} 答案为 {1}", question, result);
+        bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                .builder()
+                .text(msg)
+                .reply(event.getMessageId())
+                .build(), false);
     }
 }

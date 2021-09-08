@@ -14,6 +14,7 @@ import java.util.List;
 @Component
 @ChatCommand(
         name = "terminate",
+        alias = {"中止监听", "取消监听"},
         description = "中止监听",
         placeholders = {"房间号"}
 )
@@ -28,10 +29,25 @@ public class BLiveTerminateCommand implements GroupChatCommand {
         try {
             roomId  = Long.parseLong(args.get(0));
         }catch (NumberFormatException e){
-            bot.sendGroupMsg(event.getGroupId(), "不是有效的房间号", true);
+            bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                    .builder()
+                    .text("不是有效的房间号")
+                    .reply(event.getMessageId()).build(), false);
             return;
         }
-        liveService.stopListen(roomId);
-        bot.sendGroupMsg(event.getGroupId(), "正在请求中止监听直播房间("+roomId+")...", true);
+        if (liveService.stopListen(roomId)){
+            bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                    .builder()
+                    .text("已中止监听直播房间("+roomId+")。")
+                    .reply(event.getMessageId())
+                    .build(), false);
+        }else{
+            bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                    .builder()
+                    .text("你尚未开始监听此直播房间。")
+                    .reply(event.getMessageId())
+                    .build(), false);
+        }
+
     }
 }

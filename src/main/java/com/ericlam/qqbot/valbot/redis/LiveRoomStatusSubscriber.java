@@ -1,6 +1,7 @@
 package com.ericlam.qqbot.valbot.redis;
 
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
+import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;

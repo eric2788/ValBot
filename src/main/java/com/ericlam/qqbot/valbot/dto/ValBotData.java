@@ -15,6 +15,7 @@ public class ValBotData {
 
     public static class BLiveSettings {
 
+        public Set<Long> listening = new HashSet<>();
         public Set<Long> highlightUsers = new HashSet<>();
         public boolean verbose = true;
 

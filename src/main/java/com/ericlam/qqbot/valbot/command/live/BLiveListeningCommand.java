@@ -2,7 +2,7 @@ package com.ericlam.qqbot.valbot.command.live;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.command.GroupChatCommand;
-import com.ericlam.qqbot.valbot.redis.BilibiliLiveService;
+import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;

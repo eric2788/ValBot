@@ -53,7 +53,7 @@ public class BilibiliLiveSubscriber extends BotMessageListener {
             var ws = mapper.readValue(message.getBody(), BLiveWebSocketData.class);
             var handleCls = handlerMap.get(ws.command);
             if (handleCls == null){
-                logger.info("找不到 指令 {} 的處理方法，已略過。", ws.command);
+                logger.debug("找不到 指令 {} 的處理方法，已略過。", ws.command);
                 return;
             }
             logger.debug("(房间{}) 收到WS指令: {}", room, ws);

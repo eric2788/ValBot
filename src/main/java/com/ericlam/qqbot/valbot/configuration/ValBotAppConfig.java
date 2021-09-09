@@ -1,18 +1,16 @@
-package com.ericlam.qqbot.valbot;
+package com.ericlam.qqbot.valbot.configuration;
 
 import com.ericlam.qqbot.valbot.command.CheckCommand;
-import com.ericlam.qqbot.valbot.command.GroupChatCommand;
+import com.ericlam.qqbot.valbot.crossplatform.ChatResponse;
+import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 import com.ericlam.qqbot.valbot.command.SpeakCommand;
 import com.ericlam.qqbot.valbot.command.live.BLiveCommand;
 import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
 import com.ericlam.qqbot.valbot.command.yesno.YesNoCommand;
-import com.ericlam.qqbot.valbot.response.ChatResponse;
-import com.ericlam.qqbot.valbot.response.GroupChatResponse;
-import com.ericlam.qqbot.valbot.response.PrivateChatResponse;
-import com.ericlam.qqbot.valbot.response.group.CustomResponse;
-import com.ericlam.qqbot.valbot.response.group.DaCallResponse;
-import com.ericlam.qqbot.valbot.response.group.RepeatResponse;
-import com.ericlam.qqbot.valbot.response.group.YesNoResponse;
+import com.ericlam.qqbot.valbot.response.CustomResponse;
+import com.ericlam.qqbot.valbot.response.DaCallResponse;
+import com.ericlam.qqbot.valbot.response.RepeatResponse;
+import com.ericlam.qqbot.valbot.response.YesNoResponse;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -20,30 +18,25 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mikuac.shiro.core.Bot;
-import com.mikuac.shiro.core.BotContainer;
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
-import com.mikuac.shiro.dto.event.message.PrivateMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 
 @EnableScheduling
 @Configuration
-public class ValBotConfiguration {
+public class ValBotAppConfig {
 
     private final File folder = new File("data");
 
@@ -78,14 +71,25 @@ public class ValBotConfiguration {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    @Bean("translate-status")
+    public Map<String, String> translateStatus(){
+        return Map.of(
+                "started", "的监听已开始",
+                "stopped", "的监听已关闭",
+                "existed", "的监听已经启动了，因此请求被忽略",
+                "server-closed", "已关闭",
+                "server-started", "已启动"
+        );
+    }
+
     public static class ValBot {
     }
 
 
     // register section
 
-    @Bean("group-chat-responses")
-    public List<Class<? extends GroupChatResponse>> groupChatResponses() {
+    @Bean("chat-responses")
+    public List<Class<? extends ChatResponse>> groupChatResponses() {
         return List.of(
                 RepeatResponse.class,
                 YesNoResponse.class,
@@ -94,14 +98,10 @@ public class ValBotConfiguration {
         );
     }
 
-    @Bean("private-chat-responses")
-    public List<Class<? extends PrivateChatResponse>> privateChatResponses() {
-        return List.of();
-    }
 
 
     @Bean("commands")
-    public List<Class<? extends GroupChatCommand>> chatCommands(){
+    public List<Class<? extends GroupCommand>> chatCommands(){
         return List.of(
                 SpeakCommand.class,
                 YesNoCommand.class,

@@ -1,12 +1,11 @@
 package com.ericlam.qqbot.valbot.redis;
 
+import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
-import com.ericlam.qqbot.valbot.dto.SuperChatMessage;
-import com.ericlam.qqbot.valbot.redis.wshandle.BLiveHandle;
+import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mikuac.shiro.common.utils.MsgUtils;
-import com.mikuac.shiro.core.Bot;
-import org.jetbrains.annotations.NotNull;
+import com.mikuac.shiro.core.BotContainer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +13,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
-public class BilibiliLiveSubscriber extends BotMessageListener {
+public class BilibiliLiveSubscriber implements MessageListener {
+
+
+    @Autowired
+    private ValDataService dataService;
 
     @Autowired
     private ObjectMapper mapper;
-
-    @Value("${val.group}")
-    private long groupId;
 
     @Autowired
     private Logger logger;
@@ -39,8 +42,11 @@ public class BilibiliLiveSubscriber extends BotMessageListener {
     @Resource(name = "ws-handler")
     private Map<String, Class<? extends BLiveHandle>> handlerMap;
 
+    @Resource(name = "ws-subscribers")
+    private List<? extends BLiveSubscriber> bLiveSubscribers;
+
     @Override
-    public void onRedisMessage(Bot bot, @NotNull Message message, byte[] bytes) {
+    public void onMessage(@Nonnull Message message, byte[] bytes) {
         String roomIdStr = new String(message.getChannel()).replace("blive:", "");
         long room;
         try {
@@ -58,9 +64,13 @@ public class BilibiliLiveSubscriber extends BotMessageListener {
             }
             logger.debug("(房间{}) 收到WS指令: {}", room, ws);
             var handle = beanFactory.getBean(handleCls);
-            handle.handle(bot, room, ws);
+            for (BLiveSubscriber subscriber : bLiveSubscribers) {
+                subscriber.subscribe(handle, room, ws);
+            }
         } catch (IOException e) {
-            bot.sendGroupMsg(groupId, "解析WS數據時出現錯誤: " + e.getMessage(), true);
+            if (dataService.getData().bLiveSettings.verbose){
+                bLiveSubscribers.forEach(sub -> sub.doOnError(e, room));
+            }
             logger.warn("Error while parsing data ", e);
         }
     }

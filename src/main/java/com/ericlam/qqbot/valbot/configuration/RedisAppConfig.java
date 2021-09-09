@@ -1,7 +1,14 @@
-package com.ericlam.qqbot.valbot.redis;
+package com.ericlam.qqbot.valbot.configuration;
 
+import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
+import com.ericlam.qqbot.valbot.redis.LiveRoomStatusSubscriber;
 import com.ericlam.qqbot.valbot.redis.wshandle.*;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,12 +18,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
+import java.util.List;
 import java.util.Map;
 
 
 @ComponentScan("com.ericlam.qqbot.valbot.redis")
 @Configuration
-public class RedisConfig {
+public class RedisAppConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -46,6 +54,14 @@ public class RedisConfig {
                 BLiveWebSocketData.CommandType.DANMU_MSG, DanmuHandle.class,
                 BLiveWebSocketData.CommandType.SUPER_CHAT_MESSAGE, SuperChatHandle.class,
                 BLiveWebSocketData.CommandType.INTERACT_WORD, RoomEnterHandle.class
+        );
+    }
+
+    @Bean("ws-subscribers")
+    public List<? extends BLiveSubscriber> bLiveSubscribers(BeanFactory factory){
+        return List.of(
+                factory.getBean(QQBLiveSubscriber.class),
+                factory.getBean(DiscordBLiveSubscriber.class)
         );
     }
 

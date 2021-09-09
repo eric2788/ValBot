@@ -1,5 +1,6 @@
 package com.ericlam.qqbot.valbot.command;
 
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQGroupCommand;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
@@ -18,7 +19,7 @@ import java.util.Locale;
         alias = "查成分",
         placeholders = "<用户>"
 )
-public class CheckCommand implements GroupChatCommand {
+public class CheckCommand implements QQGroupCommand { // 不支援 discord 的指令
 
     private static final DateFormat FORMATTER = DateFormat.getDateTimeInstance(2, 2, Locale.SIMPLIFIED_CHINESE);
 

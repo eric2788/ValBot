@@ -1,5 +1,7 @@
 package com.ericlam.qqbot.valbot.command;
 
+import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,7 +19,7 @@ public @interface ChatCommand {
 
     String[] placeholders() default {};
 
-    Class<? extends GroupChatCommand>[] subCommands() default {};
+    Class<? extends GroupCommand>[] subCommands() default {};
 
 
 }

@@ -1,15 +1,19 @@
 package com.ericlam.qqbot.valbot.command.live;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
-import com.ericlam.qqbot.valbot.command.GroupChatCommand;
+import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQGroupCommand;
 import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.MessageChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @ChatCommand(
@@ -17,7 +21,7 @@ import java.util.List;
         alias = {"正在监听", "监听列表"},
         description = "获取正在监听的房间号"
 )
-public class BLiveListeningCommand implements GroupChatCommand {
+public class BLiveListeningCommand implements QQGroupCommand, DiscordGroupCommand {
 
     @Autowired
     private BilibiliLiveService liveService;
@@ -29,5 +33,19 @@ public class BLiveListeningCommand implements GroupChatCommand {
                 .text("正在监听的房间号: "+liveService.getLiveRoomListening().toString())
                 .reply(event.getMessageId())
                 .build(), false);
+    }
+
+    @Override
+    public void executeCommand(MessageChannel channel, MessageCreateEvent event, List<String> args) {
+        channel.createMessage(spec -> {
+            spec.addEmbed(em -> {
+                em.addField("正在监听的房间号: ",
+                        liveService.getLiveRoomListening()
+                                .stream()
+                                .map(String::valueOf)
+                                .collect(Collectors.joining("\n")), false);
+            });
+            spec.setMessageReference(event.getMessage().getId());
+        }).subscribe();
     }
 }

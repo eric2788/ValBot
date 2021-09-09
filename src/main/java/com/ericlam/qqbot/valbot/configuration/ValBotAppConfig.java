@@ -1,12 +1,13 @@
 package com.ericlam.qqbot.valbot.configuration;
 
 import com.ericlam.qqbot.valbot.command.CheckCommand;
-import com.ericlam.qqbot.valbot.crossplatform.ChatResponse;
-import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 import com.ericlam.qqbot.valbot.command.SpeakCommand;
 import com.ericlam.qqbot.valbot.command.live.BLiveCommand;
 import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
+import com.ericlam.qqbot.valbot.command.test.TestCommand;
 import com.ericlam.qqbot.valbot.command.yesno.YesNoCommand;
+import com.ericlam.qqbot.valbot.crossplatform.ChatResponse;
+import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 import com.ericlam.qqbot.valbot.response.CustomResponse;
 import com.ericlam.qqbot.valbot.response.DaCallResponse;
 import com.ericlam.qqbot.valbot.response.RepeatResponse;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +107,8 @@ public class ValBotAppConfig {
                 YesNoCommand.class,
                 CustomResponseCommand.class,
                 CheckCommand.class,
-                BLiveCommand.class
+                BLiveCommand.class,
+                TestCommand.class
         );
     }
 

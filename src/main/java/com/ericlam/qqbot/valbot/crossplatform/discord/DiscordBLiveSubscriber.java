@@ -82,11 +82,11 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
     }
 
     private Optional<NewsChannel> getNewsChannel() {
-        return client.getChannelById(Snowflake.of(newsChannel)).filter(c -> c instanceof NewsChannel).map(c -> (NewsChannel) c).blockOptional();
+        return client.getChannelById(Snowflake.of(newsChannel)).ofType(NewsChannel.class).blockOptional();
     }
 
     private Optional<TextChannel> getLogChannel() {
-        return client.getChannelById(Snowflake.of(logChannel)).filter(c -> c instanceof TextChannel).map(c -> (TextChannel) c).blockOptional();
+        return client.getChannelById(Snowflake.of(logChannel)).ofType(TextChannel.class).blockOptional();
     }
 
 }

@@ -1,7 +1,6 @@
 package com.ericlam.qqbot.valbot.configuration;
 
 import com.ericlam.qqbot.valbot.configuration.properties.DiscordConfig;
-import com.ericlam.qqbot.valbot.crossplatform.MessageEventSource;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordMessageEventSource;
 import com.ericlam.qqbot.valbot.manager.ChatCommandManager;
 import com.ericlam.qqbot.valbot.manager.ChatResponseManager;
@@ -14,7 +13,7 @@ import discord4j.core.event.domain.lifecycle.ReconnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Entity;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.NewsChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.rest.util.Color;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class DiscordAppConfig {
 
         LOGGER.info("正在获取广播频道 {}...", discordSettings.getNewsChannel());
 
-        client.getChannelById(Snowflake.of(discordSettings.getLogChannel())).map(c -> (TextChannel) c).blockOptional().ifPresentOrElse(channel -> {
+        client.getChannelById(Snowflake.of(discordSettings.getLogChannel())).ofType(TextChannel.class).blockOptional().ifPresentOrElse(channel -> {
             client.getEventDispatcher().on(ReadyEvent.class)
                     .filter(e -> e.getSelf().equals(client.getSelf().block()))
                     .flatMap(e -> channel.createMessage("本机器人已成功启动。")).subscribe();
@@ -78,10 +77,15 @@ public class DiscordAppConfig {
                                 && e.getMessage().getAuthor().map(u -> !u.isBot()).orElse(false) // 机器人无视
                 )
                 .subscribe(event -> {
-                    DiscordMessageEventSource source = new DiscordMessageEventSource(event.getMessage().getChannel().block(), event);
+                    var guildMessageChannel = event.getMessage().getChannel().ofType(GuildMessageChannel.class).blockOptional();
+                    if (guildMessageChannel.isEmpty()){
+                        LOGGER.debug("不是 GuildMessageChannel, 已略过。");
+                        return;
+                    }
+                    DiscordMessageEventSource source = new DiscordMessageEventSource(guildMessageChannel.get(), event);
                     for (MessageCreateHandle handle : handleList) {
                         LOGGER.debug("正在处理: {}", handle.getClass().getSimpleName());
-                        if (!handle.handle(source, event)) {
+                        if (!handle.handle(source)) {
                             break;
                         }
                     }
@@ -103,7 +107,7 @@ public class DiscordAppConfig {
     @FunctionalInterface
     public interface MessageCreateHandle {
 
-        boolean handle(DiscordMessageEventSource eventSource, MessageCreateEvent event);
+        boolean handle(DiscordMessageEventSource eventSource);
 
     }
 
@@ -118,7 +122,8 @@ public class DiscordAppConfig {
         private ChatCommandManager chatCommandManager;
 
         @Override
-        public boolean handle(DiscordMessageEventSource eventSource, MessageCreateEvent event) {
+        public boolean handle(DiscordMessageEventSource eventSource) {
+            var event = eventSource.event();
             if (chatCommandManager.isNotCommand(event.getMessage().getContent())) { // 如为无效指令
                 return true; // 则无视
             }
@@ -132,13 +137,12 @@ public class DiscordAppConfig {
             }
             Message message = event.getMessage();
             var isAdmin = event.getMember().map(m -> m.getHighestRole().block()).map(role -> role.getId().asLong() == discordSetting.getAdminRole()).orElse(false);
-            MessageEventSource discordEventSource = new DiscordMessageEventSource(message.getChannel().block(), event);
 
             // command
             var result = chatCommandManager.onReceiveMessage(
                     message.getContent(),
                     isAdmin,
-                    discordEventSource
+                    eventSource
             );
 
             LOGGER.debug("指令 !{} 返回结果为 {}", message.getContent(), result);
@@ -184,7 +188,7 @@ public class DiscordAppConfig {
     public static record ChatMessageCreateHandle(ChatResponseManager responseManager) implements MessageCreateHandle {
 
         @Override
-        public boolean handle(DiscordMessageEventSource eventSource, MessageCreateEvent event) {
+        public boolean handle(DiscordMessageEventSource eventSource) {
             return responseManager.onReceiveMessage(eventSource);
         }
 

@@ -17,6 +17,8 @@ public class BLiveWebSocketData implements Serializable {
         public static final String INTERACT_WORD = "INTERACT_WORD";
 
 
+        public static final String BOT_TESTING = "BOT_TESTING";
+
     }
 
     public String command;

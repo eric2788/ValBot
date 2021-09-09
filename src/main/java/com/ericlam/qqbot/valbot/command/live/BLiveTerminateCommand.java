@@ -8,7 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +55,7 @@ public class BLiveTerminateCommand implements QQGroupCommand, DiscordGroupComman
     }
 
     @Override
-    public void executeCommand(MessageChannel channel, MessageCreateEvent event, List<String> args) {
+    public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         long roomId;
         try {
             roomId = Long.parseLong(args.get(0));

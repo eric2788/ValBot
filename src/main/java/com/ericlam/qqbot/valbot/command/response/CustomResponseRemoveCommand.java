@@ -8,7 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class CustomResponseRemoveCommand implements QQGroupCommand, DiscordGroup
     }
 
     @Override
-    public void executeCommand(MessageChannel channel, MessageCreateEvent event, List<String> args) {
+    public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         boolean result = dataService.getData().responses.remove(args.get(0)) != null;
         String msg = result ? "移除成功" : "找不到这个文字";
         channel.createMessage(spec -> spec.setContent(msg).setMessageReference(event.getMessage().getId())).subscribe();

@@ -1,5 +1,6 @@
 package com.ericlam.qqbot.valbot.service;
 
+import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.ValBotData;
 import com.ericlam.qqbot.valbot.redis.BilibiliLiveSubscriber;
 import org.slf4j.Logger;

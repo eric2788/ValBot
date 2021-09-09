@@ -5,12 +5,17 @@ import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveHandle;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
-import discord4j.core.object.entity.channel.NewsChannel;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.discordjson.json.EmojiData;
 import discord4j.rest.util.Color;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 @Component
 public class BroadcastHandle implements QQBLiveHandle, DiscordBLiveHandle {
@@ -22,10 +27,9 @@ public class BroadcastHandle implements QQBLiveHandle, DiscordBLiveHandle {
     @Override
     public void handle(Bot bot, long groupId, long room, BLiveWebSocketData ws) throws IOException {
         var builder = MsgUtils.builder()
-                .text("收到开播通知:").text("\n")
+                .text(ws.data.name).text(" 正在直播").text("\n")
                 .text("标题: ").text(ws.data.title).text("\n")
-                .text("用户: ").text(ws.data.name).text("(" + ws.data.uid + ")").text("\n")
-                .text("连结: ").text("https://live.bilibili.com/").text(String.valueOf(room));
+                .text("直播间: ").text("https://live.bilibili.com/").text(String.valueOf(room));
         if (ws.data.cover != null) {
             builder.img(ws.data.cover);
         }
@@ -33,19 +37,20 @@ public class BroadcastHandle implements QQBLiveHandle, DiscordBLiveHandle {
     }
 
     @Override
-    public void handle(NewsChannel channel, long room, BLiveWebSocketData ws) throws IOException {
+    public void handle(GuildMessageChannel channel, long room, BLiveWebSocketData ws) throws IOException {
         channel.createMessage(spec -> {
             spec.addEmbed(em -> {
-                em.setTitle("收到开播通知");
+                em.setDescription(MessageFormat.format("[{0}]({1}) 正在直播", ws.data.name, "https://space.bilibili.com/"+ws.data.uid));
                 em.setColor(randomColor);
-                em.setDescription("从B站直播间收到了开播通知");
-                em.addField("标题", ws.data.title, true);
-                em.addField("用户", ws.data.name + "("+ws.data.uid+")", true);
-                em.addField("连结", "https://live.bilibili.com/" + room, true);
+                em.addField("标题", ws.data.title, false);
+                em.addField("房间号", String.valueOf(room), false);
                 if (ws.data.cover != null){
                     em.setImage(ws.data.cover);
                 }
             });
+            spec.setComponents(
+                    ActionRow.of(Button.link("https://live.bilibili.com/" + room, ReactionEmoji.unicode("\uD83D\uDEAA"), "进入直播间"))
+            );
         }).subscribe();
     }
 }

@@ -8,10 +8,12 @@ import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.rest.util.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Component
@@ -23,6 +25,9 @@ public class YesNoCheckCommand implements QQGroupCommand, DiscordGroupCommand {
 
     @Autowired
     private ValDataService dataService;
+
+    @Resource(name = "random")
+    private Color randomColor;
 
     @Override
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
@@ -38,7 +43,7 @@ public class YesNoCheckCommand implements QQGroupCommand, DiscordGroupCommand {
     }
 
     @Override
-    public void executeCommand(MessageChannel channel, MessageCreateEvent event, List<String> args) {
+    public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         StringBuilder builder = new StringBuilder();
         dataService.getData().answers.forEach((q, r) -> {
             builder.append(q).append("=").append(r).append("\n");
@@ -46,6 +51,7 @@ public class YesNoCheckCommand implements QQGroupCommand, DiscordGroupCommand {
         channel.createMessage(spec -> {
             spec.setMessageReference(event.getMessage().getId());
             spec.addEmbed(em -> {
+                em.setColor(randomColor);
                 em.addField("正在打印所有内容", builder.toString(), false);
             });
         }).subscribe();

@@ -8,7 +8,7 @@ import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class BLiveVerboseCommand implements QQGroupCommand, DiscordGroupCommand 
     }
 
     @Override
-    public void executeCommand(MessageChannel channel, MessageCreateEvent event, List<String> args) {
+    public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         settings.verbose = !settings.verbose;
         String msg = "成功切换广播状态为 "+settings.verbose;
         channel.createMessage(spec -> spec.setContent(msg).setMessageReference(event.getMessage().getId())).subscribe();

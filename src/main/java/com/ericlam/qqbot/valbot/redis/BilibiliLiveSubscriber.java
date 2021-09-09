@@ -5,11 +5,9 @@ import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mikuac.shiro.core.BotContainer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.connection.Message;
@@ -63,10 +61,7 @@ public class BilibiliLiveSubscriber implements MessageListener {
                 return;
             }
             logger.debug("(房间{}) 收到WS指令: {}", room, ws);
-            var handle = beanFactory.getBean(handleCls);
-            for (BLiveSubscriber subscriber : bLiveSubscribers) {
-                subscriber.subscribe(handle, room, ws);
-            }
+            this.handleWSLiveData(handleCls, room, ws);
         } catch (IOException e) {
             if (dataService.getData().bLiveSettings.verbose){
                 bLiveSubscribers.forEach(sub -> sub.doOnError(e, room));
@@ -74,4 +69,13 @@ public class BilibiliLiveSubscriber implements MessageListener {
             logger.warn("Error while parsing data ", e);
         }
     }
+
+    // you can make fake data
+    public <T extends BLiveHandle> void handleWSLiveData(Class<T> handleCls, long room, BLiveWebSocketData ws) throws IOException{
+        var handle = beanFactory.getBean(handleCls);
+        for (BLiveSubscriber subscriber : this.bLiveSubscribers) {
+            subscriber.subscribe(handle, room, ws);
+        }
+    }
+
 }

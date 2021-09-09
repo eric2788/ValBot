@@ -10,6 +10,7 @@ import com.ericlam.qqbot.valbot.crossplatform.qq.QQMessageEventSource;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
@@ -106,7 +107,7 @@ public class ChatCommandManager {
                 qqGroupCommand.executeCommand(qqBot, event, args);
             }
         } else if (source instanceof DiscordMessageEventSource discordMessageEventSource) {
-            MessageChannel channel = discordMessageEventSource.channel();
+            GuildMessageChannel channel = discordMessageEventSource.channel();
             MessageCreateEvent event = discordMessageEventSource.event();
             if (!(chatCommand instanceof DiscordGroupCommand discordGroupCommand)) {
                 logger.info("來源於 Discord 但 不支援作为Discord指令，已略過。");

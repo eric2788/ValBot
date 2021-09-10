@@ -18,7 +18,8 @@ import java.util.List;
 @ChatCommand(
         name = "listen",
         description = "监听",
-        placeholders = {"<房间号>"}
+        placeholders = {"<房间号>"},
+        alias = {"添加监听"}
 )
 public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
 

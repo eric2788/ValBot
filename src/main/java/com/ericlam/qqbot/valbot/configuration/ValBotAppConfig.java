@@ -8,10 +8,7 @@ import com.ericlam.qqbot.valbot.command.test.TestCommand;
 import com.ericlam.qqbot.valbot.command.yesno.YesNoCommand;
 import com.ericlam.qqbot.valbot.crossplatform.ChatResponse;
 import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
-import com.ericlam.qqbot.valbot.response.CustomResponse;
-import com.ericlam.qqbot.valbot.response.DaCallResponse;
-import com.ericlam.qqbot.valbot.response.RepeatResponse;
-import com.ericlam.qqbot.valbot.response.YesNoResponse;
+import com.ericlam.qqbot.valbot.response.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -72,7 +69,7 @@ public class ValBotAppConfig {
     }
 
     @Bean("translate-status")
-    public Map<String, String> translateStatus(){
+    public Map<String, String> translateStatus() {
         return Map.of(
                 "started", "的监听初始化成功",
                 "stopped", "的监听已关闭",
@@ -94,14 +91,15 @@ public class ValBotAppConfig {
                 RepeatResponse.class,
                 YesNoResponse.class,
                 CustomResponse.class,
-                DaCallResponse.class
+                DaCallResponse.class,
+                CanIResponse.class,
+                AtResponse.class
         );
     }
 
 
-
     @Bean("commands")
-    public List<Class<? extends GroupCommand>> chatCommands(){
+    public List<Class<? extends GroupCommand>> chatCommands() {
         return List.of(
                 SpeakCommand.class,
                 YesNoCommand.class,

@@ -40,7 +40,7 @@ public class RoomEnterHandle implements QQBLiveHandle, DiscordBLiveHandle {
         var uid = data.getLong("uid");
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
         logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.data.name);
-        String msg = MsgUtils.builder().text("噔噔咚！").text("你所关注的用户 ").text(uname).text("进入了 ").text(ws.data.name).text(" 的直播间。").build();
+        String msg = MsgUtils.builder().text("噔噔咚！").text("你所关注的用户 ").text(uname).text(" 进入了 ").text(ws.data.name).text(" 的直播间。").build();
         bot.sendGroupMsg(groupId, msg, true);
     }
 

@@ -34,6 +34,10 @@ public class ChatCommandFilter extends BotPlugin {
                    bot.sendGroupMsg(event.getGroupId(), "此指令没有支援的平台...", true);
                    break;
                default:
+                   if (result.startsWith("help:")){ // 返回幫助訊息
+                        // do something ??
+                        result = result.replace("help:", "");
+                   }
                    bot.sendGroupMsg(event.getGroupId(), result, true);
                    break;
            }

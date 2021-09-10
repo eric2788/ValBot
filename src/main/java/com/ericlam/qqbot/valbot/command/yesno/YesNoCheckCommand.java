@@ -48,6 +48,9 @@ public class YesNoCheckCommand implements QQGroupCommand, DiscordGroupCommand {
         dataService.getData().answers.forEach((q, r) -> {
             builder.append(q).append("=").append(r).append("\n");
         });
+        if (dataService.getData().answers.isEmpty()){
+            builder.append("无内容");
+        }
         channel.createMessage(spec -> {
             spec.setMessageReference(event.getMessage().getId());
             spec.addEmbed(em -> {

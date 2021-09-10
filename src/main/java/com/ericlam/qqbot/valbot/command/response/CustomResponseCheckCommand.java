@@ -43,6 +43,9 @@ public class CustomResponseCheckCommand implements QQGroupCommand, DiscordGroupC
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         StringBuilder builder = new StringBuilder();
         dataService.getData().responses.forEach((t, r) -> builder.append(t).append("=").append(r).append("\n"));
+        if (dataService.getData().responses.isEmpty()){
+            builder.append("无内容");
+        }
         channel.createMessage(spec -> {
             spec.setMessageReference(event.getMessage().getId());
             spec.addEmbed(em -> {

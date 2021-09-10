@@ -42,14 +42,14 @@ public class BLiveListeningCommand implements QQGroupCommand, DiscordGroupComman
 
     @Override
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
+        var content = liveService.getLiveRoomListening().isEmpty() ? "无" : liveService.getLiveRoomListening()
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining("\n"));
         channel.createMessage(spec -> {
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
-                em.addField("正在监听的房间号: ",
-                        liveService.getLiveRoomListening()
-                                .stream()
-                                .map(String::valueOf)
-                                .collect(Collectors.joining("\n")), false);
+                em.addField("正在监听的房间号: ", content, false);
             });
             spec.setMessageReference(event.getMessage().getId());
         }).subscribe();

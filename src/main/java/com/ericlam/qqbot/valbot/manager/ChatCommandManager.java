@@ -89,7 +89,7 @@ public class ChatCommandManager {
             return "help:"+subCommands.stream().map(c -> getHelpLine(parents, c)).collect(Collectors.joining("\n"));
         }
 
-        if (descriptor.placeholders().length > args.size()) {
+        if (Arrays.stream(descriptor.placeholders()).filter(s -> !s.startsWith("[") || !s.endsWith("]")).count() > args.size()) {
             return getHelpLine(parents, descriptor);
         }
 

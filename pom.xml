@@ -12,8 +12,8 @@
     </parent>
 
     <groupId>com.ericlam.qqbot</groupId>
-    <artifactId>ValBot</artifactId>
-    <version>0.1</version>
+    <artifactId>valqqbot</artifactId>
+    <version>0.3</version>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>

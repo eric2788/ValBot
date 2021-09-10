@@ -1,5 +1,7 @@
 package com.ericlam.qqbot.valbot.configuration;
 
+import com.ericlam.qqbot.valbot.configuration.properties.DiscordConfig;
+import com.ericlam.qqbot.valbot.configuration.properties.RedisConfig;
 import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
 import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBLiveSubscriber;
@@ -10,6 +12,8 @@ import com.ericlam.qqbot.valbot.redis.wshandle.BroadcastHandle;
 import com.ericlam.qqbot.valbot.redis.wshandle.DanmuHandle;
 import com.ericlam.qqbot.valbot.redis.wshandle.RoomEnterHandle;
 import com.ericlam.qqbot.valbot.redis.wshandle.SuperChatHandle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,10 +32,7 @@ import java.util.Map;
 @Configuration
 public class RedisAppConfig {
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory();
-    }
+    private static final Logger LOG  = LoggerFactory.getLogger(RedisAppConfig.class);
 
 
     @Bean

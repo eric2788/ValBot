@@ -42,16 +42,16 @@ public class BLiveCaringCommand implements QQGroupCommand, DiscordGroupCommand {
 
     @Override
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
+        var highlightUsers = dataService.getData().bLiveSettings.highlightUsers;
+        var content = highlightUsers.isEmpty() ? "无" : highlightUsers
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining("\n"));
         channel.createMessage(spec -> {
             spec.setMessageReference(event.getMessage().getId());
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
-                em.addField("高亮用户列表",
-                        dataService.getData()
-                                .bLiveSettings.highlightUsers
-                                .stream()
-                                .map(String::valueOf)
-                                .collect(Collectors.joining("\n")), false);
+                em.addField("高亮用户列表", content, false);
             });
         }).subscribe();
     }

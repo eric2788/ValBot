@@ -39,18 +39,32 @@ public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
                     .build(), false);
             return;
         }
-        if (liveService.startListen(roomId)) {
-            bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
-                    .text("开始监听直播房间(" + roomId + ")。")
-                    .reply(event.getMessageId())
-                    .build(), false);
-        } else {
-            bot.sendGroupMsg(event.getGroupId(), MsgUtils
-                    .builder()
-                    .text("该直播间(" + roomId + ")已经启动监听。")
-                    .reply(event.getMessageId())
-                    .build(), false);
-        }
+        liveService.getRoomInfo(roomId).whenComplete((info, ex) -> {
+
+            if (ex != null) {
+                ex.printStackTrace();
+                info.msg = ex.getMessage();
+            }
+
+            if (info.code == 1){
+                bot.sendGroupMsg(event.getGroupId(), "房间号无效: "+info.msg, true);
+                return;
+            }
+
+            if (liveService.startListen(roomId)) {
+                bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
+                        .text("开始监听直播房间(" + roomId + ")。")
+                        .reply(event.getMessageId())
+                        .build(), false);
+            } else {
+                bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                        .builder()
+                        .text("该直播间(" + roomId + ")已经启动监听。")
+                        .reply(event.getMessageId())
+                        .build(), false);
+            }
+
+        });
     }
 
     @Override
@@ -62,10 +76,31 @@ public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
             channel.createMessage(spec -> spec.setContent("不是有效的房间号").setMessageReference(event.getMessage().getId())).subscribe();
             return;
         }
-        if (liveService.startListen(roomId)) {
-            channel.createMessage(spec -> spec.setContent("开始监听直播房间(" + roomId + ")。").setMessageReference(event.getMessage().getId())).subscribe();
-        } else {
-            channel.createMessage(spec -> spec.setContent("该直播间(" + roomId + ")已经启动监听。").setMessageReference(event.getMessage().getId())).subscribe();
-        }
+        liveService.getRoomInfo(roomId).whenComplete((info, ex) -> {
+
+            if (ex != null) {
+                ex.printStackTrace();
+                info.msg = ex.getMessage();
+            }
+
+            if (info.code == 1){
+                channel.createMessage(spec ->
+                        spec.setContent("房间号无效: "+info.msg)
+                                .setMessageReference(event.getMessage().getId())).subscribe();
+                return;
+            }
+
+            if (liveService.startListen(roomId)) {
+                channel.createMessage(spec ->
+                        spec.setContent("开始监听直播房间(" + roomId + ")。")
+                                .setMessageReference(event.getMessage().getId())).subscribe();
+            } else {
+                channel.createMessage(spec ->
+                        spec.setContent("该直播间(" + roomId + ")已经启动监听。")
+                                .setMessageReference(event.getMessage().getId())).subscribe();
+            }
+
+        });
+
     }
 }

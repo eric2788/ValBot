@@ -42,6 +42,7 @@ public class DiscordAppConfig {
             DiscordConfig discordSettings,
             List<MessageCreateHandle> handleList
     ) {
+        LOGGER.debug("Launching Discord Bot with {}", discordSettings.toString());
         var client = DiscordClientBuilder.create(discordSettings.getToken())
                 .build()
                 .login()

@@ -66,4 +66,16 @@ public class DiscordConfig {
     public void setAdminRole(long adminRole) {
         this.adminRole = adminRole;
     }
+
+
+    @Override
+    public String toString() {
+        return "DiscordConfig{" +
+                "guild=" + guild +
+                ", textChannel=" + textChannel +
+                ", newsChannel=" + newsChannel +
+                ", logChannel=" + logChannel +
+                ", adminRole=" + adminRole +
+                '}';
+    }
 }

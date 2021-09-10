@@ -14,7 +14,8 @@ import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
                 BLiveCareCommand.class,
                 BLiveUncareCommand.class,
                 BLiveCaringCommand.class,
-                BLiveVerboseCommand.class
+                BLiveVerboseCommand.class,
+                BLiveClearInfoCommand.class
         }
 )
 public class BLiveCommand implements GroupCommand {

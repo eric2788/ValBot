@@ -5,6 +5,7 @@ import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
 import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.NewsChannel;
@@ -76,6 +77,12 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
         }
         var channel = logChannel.get();
         String room = status.id == -1 ? "监控服务器" : "房间 " + status.id;
+        if (status.status.startsWith("error:")){
+            String errorMsg = status.status.split(":")[1];
+            String msg = room + " 初始化监听时出现错误: " + errorMsg;
+            channel.createMessage(msg).subscribe();
+            return;
+        }
         String statusTxt = translation.getOrDefault(status.status, status.status);
         String msg = room + " " + statusTxt + "。";
         channel.createMessage(msg).subscribe();

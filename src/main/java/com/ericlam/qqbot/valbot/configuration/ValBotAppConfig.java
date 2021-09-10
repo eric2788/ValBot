@@ -74,9 +74,9 @@ public class ValBotAppConfig {
     @Bean("translate-status")
     public Map<String, String> translateStatus(){
         return Map.of(
-                "started", "的监听已开始",
+                "started", "的监听初始化成功",
                 "stopped", "的监听已关闭",
-                "existed", "的监听已经启动了，因此请求被忽略",
+                "existed", "的监听已经开始",
                 "server-closed", "已关闭",
                 "server-started", "已启动"
         );

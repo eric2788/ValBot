@@ -63,6 +63,12 @@ public class QQBLiveSubscriber implements BLiveSubscriber {
             return;
         }
         String room = status.id == -1 ? "监控服务器" : "房间 " + status.id;
+        if (status.status.startsWith("error:")){
+            String errorMsg = status.status.split(":")[1];
+            String msg = MsgUtils.builder().text(room).text(" ").text("初始化监听时出现错误: ").text(errorMsg).build();
+            bot.sendGroupMsg(groupId, msg, true);
+            return;
+        }
         String statusTxt = translation.getOrDefault(status.status, status.status);
         String msg = MsgUtils.builder().text(room).text(" ").text(statusTxt).text("。").build();
         bot.sendGroupMsg(groupId, msg, true);

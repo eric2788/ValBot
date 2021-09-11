@@ -15,3 +15,4 @@ shiro:
     - com.ericlam.qqbot.valbot.filter.ValGroupFilter
     - com.ericlam.qqbot.valbot.filter.ChatCommandFilter
     - com.ericlam.qqbot.valbot.filter.ChatResponseFilter
+    - com.ericlam.qqbot.valbot.filter.PokeSelfFilter

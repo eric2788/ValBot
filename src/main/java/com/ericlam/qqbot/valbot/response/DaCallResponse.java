@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 @Component
 public class DaCallResponse implements QQChatResponse, DiscordChatResponse {
 
-    private static final Pattern pattern = Pattern.compile("^.*给(.+)打[Cc]all.*$");
+    private static final Pattern pattern = Pattern.compile("^.*[给为](.+)打[Cc]all.*$");
 
     @Nullable
     @Override
@@ -30,6 +30,6 @@ public class DaCallResponse implements QQChatResponse, DiscordChatResponse {
         Matcher matcher = pattern.matcher(event.getMessage().getContent());
         if (!matcher.find()) return null;
         String who = matcher.group(1);
-        return ("\\"+who+"/").repeat(5);
+        return ("\\\\"+who+"//").repeat(5);
     }
 }

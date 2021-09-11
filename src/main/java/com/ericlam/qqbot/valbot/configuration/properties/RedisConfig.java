@@ -1,8 +1,10 @@
 package com.ericlam.qqbot.valbot.configuration.properties;
 
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
+@Setter
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisConfig {
 
@@ -10,22 +12,6 @@ public class RedisConfig {
     private int port;
     private int database;
     private String password;
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setDatabase(int database) {
-        this.database = database;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
     public String toString() {

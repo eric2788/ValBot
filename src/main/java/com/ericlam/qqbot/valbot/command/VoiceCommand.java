@@ -2,6 +2,7 @@ package com.ericlam.qqbot.valbot.command;
 
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
 import com.ericlam.qqbot.valbot.crossplatform.qq.QQGroupCommand;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -12,22 +13,27 @@ import java.util.List;
 
 @Component
 @ChatCommand(
-        name = "say",
-        description = "说话指令",
-        alias = {"speak", "说话", "说", "复读"},
+        name = "voice",
+        alias = {"语音"},
+        description = "发送群语音指令",
         placeholders = "<讯息>"
 )
-public class SpeakCommand implements QQGroupCommand, DiscordGroupCommand {
+public class VoiceCommand implements QQGroupCommand, DiscordGroupCommand {
 
-    @Override
-    public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
-        String speak = String.join(" ", args);
-        bot.sendGroupMsg(event.getGroupId(), speak, false);
-    }
 
     @Override
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         String speak = String.join(" ", args);
-        channel.createMessage(speak).subscribe();
+        channel.createMessage(spec -> {
+            spec.setContent(speak);
+            spec.setTts(true);
+        }).subscribe();
+    }
+
+    @Override
+    public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
+        String speak = String.join(" ", args);
+        String cq = MsgUtils.builder().tts(speak).build();
+        bot.sendGroupMsg(event.getGroupId(), cq, false);
     }
 }

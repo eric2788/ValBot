@@ -42,7 +42,6 @@ public class DanmuHandle implements QQBLiveHandle, DiscordBLiveHandle {
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
         logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.data.name, danmaku);
         String msg = MsgUtils.builder()
-                .text("噔噔咚！").text("\n")
                 .text(uname).text(" 在 ").text(ws.data.name).text(" 的直播间发送了一条消息").text("\n")
                 .text("弹幕: ").text(danmaku)
                 .build();

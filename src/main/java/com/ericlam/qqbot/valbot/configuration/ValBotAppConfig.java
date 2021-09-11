@@ -2,6 +2,8 @@ package com.ericlam.qqbot.valbot.configuration;
 
 import com.ericlam.qqbot.valbot.command.CheckCommand;
 import com.ericlam.qqbot.valbot.command.SpeakCommand;
+import com.ericlam.qqbot.valbot.command.VoiceCommand;
+import com.ericlam.qqbot.valbot.command.essence.EssenceCommand;
 import com.ericlam.qqbot.valbot.command.live.BLiveCommand;
 import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
 import com.ericlam.qqbot.valbot.command.test.TestCommand;
@@ -93,7 +95,8 @@ public class ValBotAppConfig {
                 CustomResponse.class,
                 DaCallResponse.class,
                 CanIResponse.class,
-                AtResponse.class
+                AtResponse.class,
+                LaiDianResponse.class
         );
     }
 
@@ -106,7 +109,9 @@ public class ValBotAppConfig {
                 CustomResponseCommand.class,
                 CheckCommand.class,
                 BLiveCommand.class,
-                TestCommand.class
+                TestCommand.class,
+                VoiceCommand.class,
+                EssenceCommand.class
         );
     }
 

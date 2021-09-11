@@ -12,34 +12,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class CanIResponse implements QQChatResponse, DiscordChatResponse {
+public class LaiDianResponse implements QQChatResponse, DiscordChatResponse {
 
+    private static final Pattern COME_ON_PATTERN = Pattern.compile(".*[来发]点(.+).*");
 
-    private static final Pattern CAN_PATTERN = Pattern.compile(".*(.)不(.).*");
-
-    private static final String NO = "不{0}, 爬";
-    private static final String YES = "{0}";
-
+    private static final String RESPONSE = "《{0}》";
 
     @Nullable
     @Override
     public String onDiscordResponse(MessageCreateEvent event) {
-        Matcher matcher = CAN_PATTERN.matcher(event.getMessage().getContent());
+        Matcher matcher = COME_ON_PATTERN.matcher(event.getMessage().getContent());
         if (!matcher.find()) return null;
-        String first = matcher.group(1);
-        String second = matcher.group(2);
-        if (!first.equals(second)) return null;
-        return MessageFormat.format(NO, first);
+        return MessageFormat.format(RESPONSE, matcher.group(1));
     }
 
     @Nullable
     @Override
     public String onQQResponse(GroupMessageEvent event) {
-        Matcher matcher = CAN_PATTERN.matcher(event.getMessage());
+        Matcher matcher = COME_ON_PATTERN.matcher(event.getMessage());
         if (!matcher.find()) return null;
-        String first = matcher.group(1);
-        String second = matcher.group(2);
-        if (!first.equals(second)) return null;
-        return MessageFormat.format(NO, first);
+        return MessageFormat.format(RESPONSE, matcher.group(1));
     }
 }

@@ -107,8 +107,12 @@ public class ChatCommandManager {
             } else {
                 try {
                     qqGroupCommand.executeCommand(qqBot, event, args);
-                }catch (Exception e){
+                }catch (RequestException e){
+                    logger.warn("处理指令时出现错误: {}", e.getMessage());
                     qqBot.sendGroupMsg(event.getGroupId(), "处理指令时出现错误: "+e.getMessage(), true);
+                }catch (Exception e){
+                    logger.error("处理指令时出现错误", e);
+                    qqBot.sendGroupMsg(event.getGroupId(), "处理指令时出现错误: "+e.getClass().getSimpleName(), true);
                 }
             }
         } else if (source instanceof DiscordMessageEventSource discordMessageEventSource) {
@@ -120,8 +124,12 @@ public class ChatCommandManager {
             } else {
                 try {
                     discordGroupCommand.executeCommand(channel, event, args);
-                }catch (Exception e){
+                }catch (RequestException e){
+                    logger.warn("处理指令时出现错误: {}", e.getMessage());
                     channel.createMessage("处理指令时出现错误: "+e.getMessage()).subscribe();
+                }catch (Exception e){
+                    logger.error("处理指令时出现错误", e);
+                    channel.createMessage("处理指令时出现错误: "+e.getClass().getSimpleName()).subscribe();
                 }
             }
         } else {

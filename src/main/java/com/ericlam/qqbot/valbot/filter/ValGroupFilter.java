@@ -60,7 +60,7 @@ public class ValGroupFilter extends BotPlugin {
             var msg = bot.getMsg((int)event.getMsgId());
             if (msg.getRetcode() == -1) return MESSAGE_IGNORE;
             bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().at(event.getOperatorId()).text(" 所撤回的消息:").build(), false);
-            bot.sendGroupForwardMsg(event.getGroupId(), (JSONArray) JSON.toJSON(List.of(msg.getData())));
+            bot.sendGroupMsg(event.getGroupId(), msg.getData().getRawMessage(), false);
         }
         return MESSAGE_IGNORE;
     }

@@ -60,7 +60,7 @@ public class BilibiliLiveSubscriber implements MessageListener {
                 logger.debug("找不到 指令 {} 的處理方法，已略過。", ws.command);
                 return;
             }
-            logger.debug("(房间{}) 收到WS指令: {}", room, ws);
+            //logger.debug("(房间{}) 收到WS指令: {}", room, ws); // too spam
             this.handleWSLiveData(handleCls, room, ws);
         } catch (IOException e) {
             if (dataService.getData().bLiveSettings.verbose){

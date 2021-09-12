@@ -72,27 +72,29 @@ public class ReferenceEssenceJob implements Job {
 
         Flux.just(list.toArray(EssenceInfo[]::new))
                 .filter(info -> toCalender(info.getSenderTime()).get(field()) == today())
-                .map(info -> {
-                    bot.sendGroupMsg(groupId, MsgUtils
-                            .builder()
-                            .text(tellTime()).text(",").text("\n")
-                            .at(info.getOperatorId())
-                            .text("设置了一则由")
-                            .at(info.getSenderId())
-                            .text("所发送的消息为精华消息: ")
-                            .build(), false);
+                .mapNotNull(info -> {
+                    var data = bot.getMsg(info.getMessageId());
+                    if (data.getRetcode() == -1){
+                        return null;
+                    }else{
+                        bot.sendGroupMsg(groupId, MsgUtils
+                                .builder()
+                                .text(tellTime()).text(",").text("\n")
+                                .at(info.getOperatorId())
+                                .text("设置了一则由")
+                                .at(info.getSenderId())
+                                .text("所发送的消息为精华消息: ")
+                                .build(), false);
+                        return data.getData();
+                    }
 
-                    return info;
                 })
-                .map(info -> bot.getMsg(info.getMessageId()).getData())
                 .doOnError(ex -> {
                     LOGGER.error("获取消息时出现错误: ", ex);
                     bot.sendGroupMsg(groupId, "...加载失败: " + ex.getMessage(), false);
                 })
                 .subscribe(msg -> bot.sendGroupMsg(groupId, msg.getRawMessage(), false));
-
     }
-
 
     private String toFormatString(long time) {
         return dateFormat.format(new Date(time * 1000));

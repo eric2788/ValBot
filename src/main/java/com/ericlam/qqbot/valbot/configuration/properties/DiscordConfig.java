@@ -34,6 +34,7 @@ public class DiscordConfig {
                 ", newsChannel=" + newsChannel +
                 ", logChannel=" + logChannel +
                 ", adminRole=" + adminRole +
+                ", nsfwChannel=" + nsfwChannel +
                 '}';
     }
 }

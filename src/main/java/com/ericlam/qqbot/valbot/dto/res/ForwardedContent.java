@@ -34,7 +34,7 @@ public class ForwardedContent {
             @JSONField(name = "nickname")
             private String nickName;
             @JSONField(name = "user_id")
-            private int userId;
+            private long userId;
         }
     }
 

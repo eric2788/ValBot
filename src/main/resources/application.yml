@@ -12,8 +12,8 @@ shiro:
     ws-url: "/ws/valbot"
   # 插件列表 (顺序执行，如果前一个插件返回了MESSAGE_BLOCK，将不会执行后续插件)
   plugin-list:
+    - com.ericlam.qqbot.valbot.filter.ForwardToDiscordFilter
     - com.ericlam.qqbot.valbot.filter.ValGroupFilter
     - com.ericlam.qqbot.valbot.filter.ChatCommandFilter
     - com.ericlam.qqbot.valbot.filter.ChatResponseFilter
     - com.ericlam.qqbot.valbot.filter.PokeSelfFilter
-    - com.ericlam.qqbot.valbot.filter.ForwardToDiscordFilter

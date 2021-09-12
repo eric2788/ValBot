@@ -17,13 +17,16 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class BilibiliLiveSubscriber implements MessageListener {
 
+    private static final Set<String> exceptionCommands = new HashSet<>();
 
     @Autowired
     private ValDataService dataService;
@@ -43,6 +46,8 @@ public class BilibiliLiveSubscriber implements MessageListener {
     @Resource(name = "ws-subscribers")
     private List<? extends BLiveSubscriber> bLiveSubscribers;
 
+
+
     @Override
     public void onMessage(@Nonnull Message message, byte[] bytes) {
         String roomIdStr = new String(message.getChannel()).replace("blive:", "");
@@ -55,9 +60,11 @@ public class BilibiliLiveSubscriber implements MessageListener {
         }
         try {
             var ws = mapper.readValue(message.getBody(), BLiveWebSocketData.class);
+            if (exceptionCommands.contains(ws.command)) return;
             var handleCls = handlerMap.get(ws.command);
             if (handleCls == null){
                 logger.debug("找不到 指令 {} 的處理方法，已略過。", ws.command);
+                exceptionCommands.add(ws.command);
                 return;
             }
             //logger.debug("(房间{}) 收到WS指令: {}", room, ws); // too spam

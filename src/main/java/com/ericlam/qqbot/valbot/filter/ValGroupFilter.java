@@ -1,27 +1,38 @@
 package com.ericlam.qqbot.valbot.filter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.ericlam.qqbot.valbot.dto.ValBotData;
+import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotPlugin;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent;
+import com.mikuac.shiro.dto.event.notice.GroupMsgDeleteNoticeEvent;
+import com.mikuac.shiro.enums.ShiroUtilsEnum;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ValGroupFilter extends BotPlugin {
 
-    private final Logger Logger;
+    @Autowired
+    private  Logger Logger;
 
+    private final ValBotData.CommonSettings settings;
+
+    public ValGroupFilter(ValDataService dataService){
+        settings = dataService.getData().settings;
+    }
 
     @Value("${val.group}")
     private long groupId;
-
-    public ValGroupFilter(Logger Logger) {
-        this.Logger = Logger;
-    }
 
     @Override
     public int onGroupMessage(@NotNull Bot bot, @NotNull GroupMessageEvent event) {
@@ -35,8 +46,22 @@ public class ValGroupFilter extends BotPlugin {
     @Override
     public int onPrivateMessage(@NotNull Bot bot, @NotNull PrivateMessageEvent event) {
         Logger.info("收到私讯，正在发送勿扰讯息。");
-        String msg = MsgUtils.builder().text("WDNMD，别私我谢谢").build();
-        bot.sendPrivateMsg(event.getUserId(), msg, false);
-        return MESSAGE_BLOCK;
+        if (!event.getRawMessage().startsWith(ShiroUtilsEnum.CQ_CODE_SPLIT.getValue())){
+            String msg = MsgUtils.builder().text("WDNMD，别私我谢谢").build();
+            bot.sendPrivateMsg(event.getUserId(), msg, false);
+            return MESSAGE_BLOCK;
+        }
+        return MESSAGE_IGNORE;
+    }
+
+    @Override
+    public int onGroupMsgDeleteNotice(@NotNull Bot bot, @NotNull GroupMsgDeleteNoticeEvent event) {
+        if (settings.verboseDelete){
+            var msg = bot.getMsg((int)event.getMsgId());
+            if (msg.getRetcode() == -1) return MESSAGE_IGNORE;
+            bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().at(event.getOperatorId()).text(" 所撤回的消息:").build(), false);
+            bot.sendGroupForwardMsg(event.getGroupId(), (JSONArray) JSON.toJSON(List.of(msg.getData())));
+        }
+        return MESSAGE_IGNORE;
     }
 }

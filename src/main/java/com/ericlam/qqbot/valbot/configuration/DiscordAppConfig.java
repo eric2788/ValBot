@@ -4,6 +4,7 @@ import com.ericlam.qqbot.valbot.configuration.properties.DiscordConfig;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordMessageEventSource;
 import com.ericlam.qqbot.valbot.manager.ChatCommandManager;
 import com.ericlam.qqbot.valbot.manager.ChatResponseManager;
+import com.ericlam.qqbot.valbot.service.ValDataService;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -11,6 +12,7 @@ import discord4j.core.event.domain.lifecycle.DisconnectEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.lifecycle.ReconnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.entity.Entity;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -41,7 +43,8 @@ public class DiscordAppConfig {
     @Bean
     public GatewayDiscordClient discordClient(
             DiscordConfig discordSettings,
-            List<MessageCreateHandle> handleList
+            List<MessageCreateHandle> handleList,
+            ValDataService dataService
     ) {
         LOGGER.debug("Launching Discord Bot with {}", discordSettings.toString());
         var client = DiscordClientBuilder.create(discordSettings.getToken())
@@ -60,11 +63,7 @@ public class DiscordAppConfig {
 
             client.getEventDispatcher().on(DisconnectEvent.class)
                     .filter(e -> e.getClient() == client)
-                    .flatMap(e -> channel.createMessage("机器人失去连线，原因: " + e.getStatus().getReason()
-                            .orElseGet(() -> e.getCause()
-                                    .map(Throwable::getMessage)
-                                    .orElse("UNKNOWN")
-                            ))).subscribe();
+                    .subscribe(e -> LOGGER.warn("Discord 机器人失去连线，原因: {}", e.getStatus()));
 
             client.getEventDispatcher().on(ReconnectEvent.class)
                     .filter(e -> e.getClient() == client)
@@ -92,6 +91,14 @@ public class DiscordAppConfig {
                         }
                     }
                 });
+
+        client.getEventDispatcher().on(MessageDeleteEvent.class)
+                .filter(e -> dataService.getData().settings.verboseDelete)
+                .flatMap(e -> e.getChannel().map(channel -> channel.createMessage(spec -> {
+                    spec.addEmbed(em -> {
+                        em.addField("被删除的消息", e.getMessage().map(Message::getContent).orElse("NULL"), false);
+                    });
+                }))).subscribe();
         return client;
     }
 
@@ -184,6 +191,11 @@ public class DiscordAppConfig {
     }
 
     private static final Random RANDOM = new Random();
+
+    @Bean
+    public Random javaRandom(){
+        return RANDOM;
+    }
 
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean("random")

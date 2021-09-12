@@ -10,7 +10,6 @@ import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
-import discord4j.discordjson.json.EmojiData;
 import discord4j.rest.util.Color;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

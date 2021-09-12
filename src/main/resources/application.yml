@@ -16,3 +16,4 @@ shiro:
     - com.ericlam.qqbot.valbot.filter.ChatCommandFilter
     - com.ericlam.qqbot.valbot.filter.ChatResponseFilter
     - com.ericlam.qqbot.valbot.filter.PokeSelfFilter
+    - com.ericlam.qqbot.valbot.filter.ForwardToDiscordFilter

@@ -1,5 +1,6 @@
-package com.ericlam.qqbot.valbot.command.essence;
+package com.ericlam.qqbot.valbot.command.random;
 
+import com.alibaba.fastjson.JSONArray;
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
 import com.ericlam.qqbot.valbot.crossplatform.qq.QQGroupCommand;
@@ -17,13 +18,14 @@ import java.util.Random;
 
 @Component
 @ChatCommand(
-        name = "random",
-        alias = {"随机"},
+        name = "essence",
+        alias = {"群精华"},
         description = "获取随机一条群精华消息"
 )
-public class EssenceRandomCommand implements QQGroupCommand, DiscordGroupCommand {
+public class RandomEssenceCommand implements QQGroupCommand, DiscordGroupCommand {
 
-    private static final Random RANDOM = new Random();
+    @Autowired
+    private Random random;
 
     @Autowired
     private QQBotService botService;
@@ -35,21 +37,23 @@ public class EssenceRandomCommand implements QQGroupCommand, DiscordGroupCommand
             bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().reply(event.getMessageId()).text("无群精华消息。").build(), false);
             return;
         }
-        var random = list.get(RANDOM.nextInt(list.size()));
-        var message = botService.getMessage(bot, random.getMessageId()).getData();
-        bot.sendGroupMsg(event.getGroupId(), message.getRawMessage(), false);
+        var random = list.get(this.random.nextInt(list.size()));
+        var message = botService.validateNotError(bot.getMsg(random.getMessageId())).getData();
+        JSONArray array = new JSONArray();
+        array.add(message);
+
+        bot.sendGroupForwardMsg(event.getGroupId(), array);
     }
 
     @Override
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
-
         channel.getPinnedMessages().hasElements().filter(b -> !b).flatMap(b -> channel.createMessage(spec -> {
-            spec.setContent("无群精华消息。");
+            spec.setContent("无订选消息。");
             spec.setMessageReference(event.getMessage().getId());
         })).subscribe();
 
         channel.getPinnedMessages()
-                .reduce((a, b) -> RANDOM.nextBoolean() ? a : b)
+                .reduce((a, b) -> this.random.nextBoolean() ? a : b)
                 .flatMap(msg -> channel.createMessage(msg.getContent()))
                 .subscribe();
     }

@@ -1,5 +1,6 @@
 package com.ericlam.qqbot.valbot.manager;
 
+import com.ericlam.qqbot.valbot.RequestException;
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 import com.ericlam.qqbot.valbot.crossplatform.MessageEventSource;
@@ -104,7 +105,11 @@ public class ChatCommandManager {
                 logger.info("來源於 QQ 但 不支援作为QQ指令，已略過。");
                 return "此指令不支援 QQ 平台。";
             } else {
-                qqGroupCommand.executeCommand(qqBot, event, args);
+                try {
+                    qqGroupCommand.executeCommand(qqBot, event, args);
+                }catch (Exception e){
+                    qqBot.sendGroupMsg(event.getGroupId(), "处理指令时出现错误: "+e.getMessage(), true);
+                }
             }
         } else if (source instanceof DiscordMessageEventSource discordMessageEventSource) {
             GuildMessageChannel channel = discordMessageEventSource.channel();
@@ -113,7 +118,11 @@ public class ChatCommandManager {
                 logger.info("來源於 Discord 但 不支援作为Discord指令，已略過。");
                 return "此指令不支援 Discord 平台。";
             } else {
-                discordGroupCommand.executeCommand(channel, event, args);
+                try {
+                    discordGroupCommand.executeCommand(channel, event, args);
+                }catch (Exception e){
+                    channel.createMessage("处理指令时出现错误: "+e.getMessage()).subscribe();
+                }
             }
         } else {
             return CommandResult.UNAVAILABLE;

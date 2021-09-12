@@ -23,6 +23,8 @@ public class DiscordConfig {
 
     private long adminRole;
 
+    private long nsfwChannel;
+
 
     @Override
     public String toString() {

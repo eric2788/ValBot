@@ -16,8 +16,12 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
+import reactor.scheduler.forkjoin.ForkJoinPoolScheduler;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +57,7 @@ public class ForwardToDiscordFilter extends BotPlugin {
             return MESSAGE_BLOCK;
         }
         Flux.just(list.toArray(ForwardedContent.ForwardMessage[]::new))
+                .subscribeOn(ForkJoinPoolScheduler.create("forward-to-discord")) // async
                 .flatMap(msg -> Flux.just(ShiroUtils.getMsgImgUrlList(msg.getContent()).toArray(String[]::new)))
                 .concatMap(s -> client.getChannelById(Snowflake.of(discordConfig.getNsfwChannel()))
                         .ofType(GuildMessageChannel.class).flatMap(ch -> ch.createMessage(s)))

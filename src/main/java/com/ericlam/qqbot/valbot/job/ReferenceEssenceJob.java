@@ -71,7 +71,8 @@ public class ReferenceEssenceJob implements Job {
         }
 
         Flux.just(list.toArray(EssenceInfo[]::new))
-                .filter(info -> toCalender(info.getSenderTime()).get(field()) == today())
+                .filter(info -> toCalender(info.getSenderTime()).get(dayField()) == today())
+                .filter(info -> toCalender(info.getSenderTime()).get(previousUnitField()) != previousUnit()) // not this year / this month
                 .mapNotNull(info -> {
                     var data = bot.getMsg(info.getMessageId());
                     if (data.getRetcode() == -1){
@@ -108,12 +109,20 @@ public class ReferenceEssenceJob implements Job {
     }
 
     private int today() {
-        return Calendar.getInstance().get(field());
+        return Calendar.getInstance().get(dayField());
+    }
+
+    private int previousUnit(){
+        return Calendar.getInstance().get(previousUnitField());
     }
 
 
-    private int field() {
+    private int dayField() {
         return settings.yearlyCheck ? Calendar.DAY_OF_YEAR : Calendar.DAY_OF_MONTH;
+    }
+
+    private int previousUnitField(){
+        return settings.yearlyCheck ? Calendar.YEAR : Calendar.MONTH;
     }
 
     private String tellTime() {

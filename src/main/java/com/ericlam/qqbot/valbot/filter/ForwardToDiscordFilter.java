@@ -46,7 +46,7 @@ public class ForwardToDiscordFilter extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot bot, @NotNull PrivateMessageEvent event) {
         Matcher matcher = FORWARD_PATTERN.matcher(event.getMessage());
         var find = matcher.find();
-        logger.debug("收到群聊消息: {} (是否转发: {})", event.getMessage(), find);
+        logger.debug("收到私聊消息: {} (是否转发: {})", event.getMessage(), find);
         if (!find) return MESSAGE_IGNORE;
         bot.sendPrivateMsg(event.getUserId(), "正在转发消息内容到Discord...", false);
         List<ForwardedContent.ForwardMessage> list;

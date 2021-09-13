@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import javax.swing.text.DateFormatter;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,7 +73,7 @@ public class ReferenceEssenceJob implements Job {
 
         Flux.just(list.toArray(EssenceInfo[]::new))
                 .filter(info -> toCalender(info.getSenderTime()).get(dayField()) == today())
-                .filter(info -> toCalender(info.getSenderTime()).get(previousUnitField()) != previousUnit()) // not this year / this month
+                .filter(info -> isNotToday(info.getSenderTime())) // not this year / this month
                 .mapNotNull(info -> {
                     var data = bot.getMsg(info.getMessageId());
                     if (data.getRetcode() == -1){
@@ -112,18 +113,19 @@ public class ReferenceEssenceJob implements Job {
         return Calendar.getInstance().get(dayField());
     }
 
-    private int previousUnit(){
-        return Calendar.getInstance().get(previousUnitField());
-    }
+    private boolean isNotToday(long time){
+        Calendar that = toCalender(time);
+        Calendar now = Calendar.getInstance();
+        return !(that.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                that.get(Calendar.MONTH) == now.get(Calendar.MONTH));
 
+    }
 
     private int dayField() {
         return settings.yearlyCheck ? Calendar.DAY_OF_YEAR : Calendar.DAY_OF_MONTH;
     }
 
-    private int previousUnitField(){
-        return settings.yearlyCheck ? Calendar.YEAR : Calendar.MONTH;
-    }
+
 
     private String tellTime() {
         return settings.yearlyCheck ? "上年度的今天" : "上个月的今天";

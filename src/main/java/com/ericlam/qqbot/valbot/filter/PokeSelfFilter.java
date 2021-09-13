@@ -14,10 +14,12 @@ public class PokeSelfFilter extends BotPlugin {
     public int onGroupPokeNotice(@NotNull Bot bot, @NotNull PokeNoticeEvent event) {
         if (event.getTargetId() != bot.getSelfId()) return MESSAGE_IGNORE;
         bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
-                .at(event.getUserId())
                 .poke(event.getUserId())
+                .build(), false); // poke back
+        bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
+                .at(event.getUserId())
                 .text("戳你妹")
-                .build(), false);
+                .build(), false); // say something
         return MESSAGE_BLOCK;
     }
 }

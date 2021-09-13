@@ -1,7 +1,6 @@
 package com.ericlam.qqbot.valbot.filter;
 
 import com.ericlam.qqbot.valbot.dto.ValBotData;
-import com.ericlam.qqbot.valbot.brucefix.FixedEventHandler;
 import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
@@ -20,11 +19,11 @@ import org.springframework.stereotype.Component;
 public class ValGroupFilter extends BotPlugin {
 
     @Autowired
-    private  Logger Logger;
+    private Logger Logger;
 
     private final ValBotData.CommonSettings settings;
 
-    public ValGroupFilter(ValDataService dataService){
+    public ValGroupFilter(ValDataService dataService) {
         settings = dataService.getData().settings;
     }
 
@@ -50,15 +49,18 @@ public class ValGroupFilter extends BotPlugin {
 
     @Override
     public int onFriendAddRequest(@NotNull Bot bot, @NotNull FriendAddRequestEvent event) {
-        if (!(event instanceof FixedEventHandler.FixedFriendAddRequestEvent fixedEvent)) return MESSAGE_IGNORE;
-        bot.setFriendAddRequest(fixedEvent.getFlag(), true, "我的好友");
+        var list = bot.getGroupMemberList(groupId);
+        if (list.getRetcode() != 0) return MESSAGE_IGNORE; // request error
+        if (list.getData().stream().noneMatch(member -> member.getUserId() == event.getUserId()))
+            return MESSAGE_IGNORE; //必須為群友
+        bot.setFriendAddRequest(event.getFlag(), true, "我的好友");
         return MESSAGE_BLOCK;
     }
 
     @Override
     public int onGroupMsgDeleteNotice(@NotNull Bot bot, @NotNull GroupMsgDeleteNoticeEvent event) {
-        if (settings.verboseDelete){
-            var msg = bot.getMsg((int)event.getMsgId());
+        if (settings.verboseDelete) {
+            var msg = bot.getMsg((int) event.getMsgId());
             if (msg.getRetcode() == -1) return MESSAGE_IGNORE;
             bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().at(event.getOperatorId()).text(" 所撤回的消息:").build(), false);
             bot.sendGroupMsg(event.getGroupId(), msg.getData().getRawMessage(), false);

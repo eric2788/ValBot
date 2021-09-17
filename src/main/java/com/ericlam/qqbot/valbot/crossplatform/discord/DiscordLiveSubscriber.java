@@ -1,11 +1,14 @@
 package com.ericlam.qqbot.valbot.crossplatform.discord;
 
 import com.ericlam.qqbot.valbot.configuration.properties.DiscordConfig;
-import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
-import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.livehandle.BiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.livehandle.YTLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.BiliLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.LiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.YTLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
-import com.mikuac.shiro.common.utils.MsgUtils;
+import com.ericlam.qqbot.valbot.dto.YoutubeLiveInfo;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.NewsChannel;
@@ -20,12 +23,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class DiscordBLiveSubscriber implements BLiveSubscriber {
+public class DiscordLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTLiveSubscriber {
 
     private final long logChannel;
     private final long newsChannel;
 
-    public DiscordBLiveSubscriber(DiscordConfig discord){
+    public DiscordLiveSubscriber(DiscordConfig discord){
         this.logChannel = discord.getLogChannel();
         this.newsChannel = discord.getNewsChannel();
     }
@@ -41,19 +44,7 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
     private Map<String, String> translation;
 
     @Override
-    public void subscribe(BLiveHandle handle, long room, BLiveWebSocketData ws) throws IOException {
-        if (!(handle instanceof DiscordBLiveHandle discordBLiveHandle)) return;
-        var newsChannel = getNewsChannel();
-        if (newsChannel.isEmpty()) {
-            logger.warn("找不到广播频道 {} ，已略过。", logChannel);
-            return;
-        }
-        var channel = newsChannel.get();
-        discordBLiveHandle.handle(channel, room, ws);
-    }
-
-    @Override
-    public void doOnError(IOException e, long room) {
+    public void doOnError(IOException e, String room) {
         var logChannel = getLogChannel();
         if (logChannel.isEmpty()) {
             logger.warn("找不到广播频道 {} ，已略过。", this.logChannel);
@@ -63,7 +54,7 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
         channel.createMessage(spec -> {
             spec.addEmbed(em -> {
                 em.addField("解析WS时出现错误", e.getMessage(), false);
-                em.addField("来源", room == -1 ? "服务器" : "房间: " + room, false);
+                em.addField("来源", room.equals("-1") || room.equals("server") ? "服务器" : "房间: " + room, false);
             });
         }).subscribe();
     }
@@ -76,15 +67,16 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
             return;
         }
         var channel = logChannel.get();
-        String room = status.id == -1 ? "监控服务器" : "房间 " + status.id;
+        String room = status.id.equals("-1") || status.id.equals("server") ? "监控服务器" : "房间 " + status.id;
+        String prefix = "【"+ status.platform +"】 ";
         if (status.status.startsWith("error:")){
             String errorMsg = status.status.split(":")[1];
-            String msg = room + " 初始化监听时出现错误: " + errorMsg;
+            String msg = prefix + room + " 初始化监听时出现错误: " + errorMsg;
             channel.createMessage(msg).subscribe();
             return;
         }
         String statusTxt = translation.getOrDefault(status.status, status.status);
-        String msg = room + " " + statusTxt + "。";
+        String msg = prefix + room + " " + statusTxt + "。";
         channel.createMessage(msg).subscribe();
     }
 
@@ -96,4 +88,28 @@ public class DiscordBLiveSubscriber implements BLiveSubscriber {
         return client.getChannelById(Snowflake.of(logChannel)).ofType(TextChannel.class).blockOptional();
     }
 
+    @Override
+    public void subscribe(BiliLiveHandle handle, long room, BLiveWebSocketData ws) throws IOException {
+        if (!(handle instanceof DiscordBiliLiveHandle discordBLiveHandle)) return;
+        var newsChannel = getNewsChannel();
+        if (newsChannel.isEmpty()) {
+            logger.warn("找不到广播频道 {} ，已略过。", logChannel);
+            return;
+        }
+        var channel = newsChannel.get();
+        discordBLiveHandle.handle(channel, room, ws);
+    }
+
+
+    @Override
+    public void subscribe(YTLiveHandle handle, String channelId, YoutubeLiveInfo info) throws IOException {
+        if (!(handle instanceof DiscordYTLiveHandle discordYTLiveHandle)) return;
+        var newsChannel = getNewsChannel();
+        if (newsChannel.isEmpty()) {
+            logger.warn("找不到广播频道 {} ，已略过。", logChannel);
+            return;
+        }
+        var channel = newsChannel.get();
+        discordYTLiveHandle.handle(channel, channelId, info);
+    }
 }

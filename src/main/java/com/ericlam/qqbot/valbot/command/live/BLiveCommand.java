@@ -1,6 +1,7 @@
 package com.ericlam.qqbot.valbot.command.live;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
+import com.ericlam.qqbot.valbot.command.settings.SettingVerboseCommand;
 import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 
 
@@ -14,7 +15,6 @@ import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
                 BLiveCareCommand.class,
                 BLiveUncareCommand.class,
                 BLiveCaringCommand.class,
-                BLiveVerboseCommand.class,
                 BLiveClearInfoCommand.class
         }
 )

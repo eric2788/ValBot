@@ -1,7 +1,8 @@
 package com.ericlam.qqbot.valbot.redis;
 
-import com.ericlam.qqbot.valbot.crossplatform.BLiveHandle;
-import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.livehandle.BiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.BiliLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.LiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.service.ValDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,7 @@ import java.util.Set;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
-public class BilibiliLiveSubscriber implements MessageListener {
+public class BilibiliLiveListener implements MessageListener {
 
     private static final Set<String> exceptionCommands = new HashSet<>();
 
@@ -40,11 +41,11 @@ public class BilibiliLiveSubscriber implements MessageListener {
     @Autowired
     private BeanFactory beanFactory;
 
-    @Resource(name = "ws-handler")
-    private Map<String, Class<? extends BLiveHandle>> handlerMap;
+    @Resource(name = "bili-live-handle")
+    private Map<String, Class<? extends BiliLiveHandle>> handlerMap;
 
     @Resource(name = "ws-subscribers")
-    private List<? extends BLiveSubscriber> bLiveSubscribers;
+    private List<? extends LiveSubscriber> bLiveSubscribers;
 
 
 
@@ -70,18 +71,20 @@ public class BilibiliLiveSubscriber implements MessageListener {
             //logger.debug("(房间{}) 收到WS指令: {}", room, ws); // too spam
             this.handleWSLiveData(handleCls, room, ws);
         } catch (IOException e) {
-            if (dataService.getData().bLiveSettings.verbose){
-                bLiveSubscribers.forEach(sub -> sub.doOnError(e, room));
+            if (dataService.getData().settings.verbose){
+                bLiveSubscribers.forEach(sub -> sub.doOnError(e, String.valueOf(room)));
             }
             logger.warn("Error while parsing data ", e);
         }
     }
 
     // you can make fake data
-    public <T extends BLiveHandle> void handleWSLiveData(Class<T> handleCls, long room, BLiveWebSocketData ws) throws IOException{
+    public <T extends BiliLiveHandle> void handleWSLiveData(Class<T> handleCls, long room, BLiveWebSocketData ws) throws IOException{
         var handle = beanFactory.getBean(handleCls);
-        for (BLiveSubscriber subscriber : this.bLiveSubscribers) {
-            subscriber.subscribe(handle, room, ws);
+        for (LiveSubscriber subscriber : this.bLiveSubscribers) {
+            if (subscriber instanceof BiliLiveSubscriber biliLiveSubscriber){
+                biliLiveSubscriber.subscribe(handle, room, ws);
+            }
         }
     }
 

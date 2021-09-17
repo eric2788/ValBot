@@ -1,7 +1,7 @@
-package com.ericlam.qqbot.valbot.redis.wshandle;
+package com.ericlam.qqbot.valbot.redis.blivehandle;
 
-import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBLiveHandle;
-import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQBiliLiveHandle;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 @Component
-public class BroadcastHandle implements QQBLiveHandle, DiscordBLiveHandle {
+public class BroadcastHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle {
 
 
     @Resource(name = "random")

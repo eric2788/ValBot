@@ -1,7 +1,7 @@
 package com.ericlam.qqbot.valbot.service;
 
 import com.ericlam.qqbot.valbot.dto.ValBotData;
-import com.ericlam.qqbot.valbot.redis.BilibiliLiveSubscriber;
+import com.ericlam.qqbot.valbot.redis.BilibiliLiveListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
@@ -34,8 +34,6 @@ public class BilibiliLiveService {
     @Autowired
     private Logger logger;
 
-    @Autowired
-    private ValDataService dataService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -58,14 +56,10 @@ public class BilibiliLiveService {
         return !bLiveSettings.highlightUsers.contains(userId);
     }
 
-    public boolean isVerBose() {
-        return bLiveSettings.verbose;
-    }
-
 
     @PostConstruct
     public void onCreate() {
-        for (Long toListen : Set.copyOf(dataService.getData().bLiveSettings.listening)) {
+        for (Long toListen : Set.copyOf(bLiveSettings.listening)) {
             this.startListenInternal(toListen, false);
         }
     }
@@ -77,7 +71,7 @@ public class BilibiliLiveService {
     private boolean startListenInternal(long roomId, boolean external) {
         if (listenerMap.containsKey(roomId)) return false;
         var topic = new ChannelTopic("blive:" + roomId);
-        var listener = factory.getBean(BilibiliLiveSubscriber.class);
+        var listener = factory.getBean(BilibiliLiveListener.class);
         redisListener.addMessageListener(listener, topic);
         this.listenerMap.put(roomId, listener);
         if (external) bLiveSettings.listening.add(roomId);

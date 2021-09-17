@@ -83,7 +83,8 @@ public class ValBotAppConfig {
                 "stopped", "的监听已关闭",
                 "existed", "的监听已经开始",
                 "server-closed", "已关闭",
-                "server-started", "已启动"
+                "server-started", "已启动",
+                "error", "的监听在初始化时出现错误"
         );
     }
 

@@ -4,7 +4,7 @@ import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
 import com.ericlam.qqbot.valbot.crossplatform.qq.QQGroupCommand;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
-import com.ericlam.qqbot.valbot.redis.wshandle.DanmuHandle;
+import com.ericlam.qqbot.valbot.redis.blivehandle.DanmuHandle;
 import com.ericlam.qqbot.valbot.service.BLiveTestService;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;

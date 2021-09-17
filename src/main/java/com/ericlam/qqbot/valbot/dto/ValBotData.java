@@ -13,20 +13,33 @@ public class ValBotData implements Serializable {
     public Map<String, String> responses = new HashMap<>();
 
     public BLiveSettings bLiveSettings = new BLiveSettings();
+    public YoutubeSettings youtubeSettings = new YoutubeSettings();
 
     public CommonSettings settings = new CommonSettings();
 
     public static class CommonSettings {
         public boolean verboseDelete = false;
         public boolean yearlyCheck = false;
+        public boolean verbose = false;
     }
 
     public static class BLiveSettings {
 
         public Set<Long> listening = new HashSet<>();
         public Set<Long> highlightUsers = new HashSet<>();
-        public boolean verbose = true;
 
+    }
+
+    public static class YoutubeSettings {
+        public Set<String> listening = new HashSet<>();
+    }
+
+    public static class TwitterSettings {
+        public Set<String> listening = new HashSet<>();
+    }
+
+    public static class TwitchSettings {
+        public Set<String> listening = new HashSet<>();
     }
 
     @Override

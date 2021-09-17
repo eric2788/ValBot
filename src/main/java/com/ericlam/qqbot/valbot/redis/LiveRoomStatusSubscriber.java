@@ -1,6 +1,6 @@
 package com.ericlam.qqbot.valbot.redis;
 
-import com.ericlam.qqbot.valbot.crossplatform.BLiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.LiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
 import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
 import com.ericlam.qqbot.valbot.service.ValDataService;
@@ -28,14 +28,10 @@ public class LiveRoomStatusSubscriber implements MessageListener {
 
 
     @Resource(name = "ws-subscribers")
-    private List<? extends BLiveSubscriber> bLiveSubscribers;
+    private List<? extends LiveSubscriber> bLiveSubscribers;
 
     @Autowired
     private Logger logger;
-
-
-    @Autowired
-    private BilibiliLiveService liveService;
 
 
     @Override
@@ -45,7 +41,7 @@ public class LiveRoomStatusSubscriber implements MessageListener {
             logger.warn("房间状态订阅 接收了 非 live-room-status 频道的讯息: {}", channel);
             return;
         }
-        if (!liveService.isVerBose()) {
+        if (!dataService.getData().settings.verbose) {
             logger.info("Verbose 為 False, 故不輸出任何狀態訊息。");
             return;
         }
@@ -53,8 +49,8 @@ public class LiveRoomStatusSubscriber implements MessageListener {
             LiveRoomStatus status = mapper.readValue(message.getBody(), LiveRoomStatus.class);
             bLiveSubscribers.forEach(sub -> sub.subscribeLiveStatus(status));
         } catch (IOException e) {
-            if (dataService.getData().bLiveSettings.verbose){
-                bLiveSubscribers.forEach(sub -> sub.doOnError(e, -1));
+            if (dataService.getData().settings.verbose){
+                bLiveSubscribers.forEach(sub -> sub.doOnError(e, "server"));
             }
             logger.warn("解析WS數據時出現錯誤: ", e);
         }

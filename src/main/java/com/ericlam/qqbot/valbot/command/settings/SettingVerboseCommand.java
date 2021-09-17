@@ -1,4 +1,4 @@
-package com.ericlam.qqbot.valbot.command.live;
+package com.ericlam.qqbot.valbot.command.settings;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
@@ -19,12 +19,12 @@ import java.util.List;
         description = "切换是否广播监听状态",
         alias = {"切换广播"}
 )
-public class BLiveVerboseCommand implements QQGroupCommand, DiscordGroupCommand {
+public class SettingVerboseCommand implements QQGroupCommand, DiscordGroupCommand {
 
-    private final ValBotData.BLiveSettings settings;
+    private final ValBotData.CommonSettings settings;
 
-    public BLiveVerboseCommand(ValDataService dataService){
-        this.settings = dataService.getData().bLiveSettings;
+    public SettingVerboseCommand(ValDataService dataService){
+        this.settings = dataService.getData().settings;
     }
 
     @Override

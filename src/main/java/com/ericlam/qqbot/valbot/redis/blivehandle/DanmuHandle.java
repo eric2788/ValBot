@@ -1,7 +1,7 @@
-package com.ericlam.qqbot.valbot.redis.wshandle;
+package com.ericlam.qqbot.valbot.redis.blivehandle;
 
-import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBLiveHandle;
-import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQBiliLiveHandle;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
 import com.mikuac.shiro.common.utils.MsgUtils;
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 @Component
-public class RoomEnterHandle implements QQBLiveHandle, DiscordBLiveHandle {
+public class DanmuHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle {
 
 
     @Autowired
@@ -34,27 +34,32 @@ public class RoomEnterHandle implements QQBLiveHandle, DiscordBLiveHandle {
 
     @Override
     public void handle(Bot bot, long groupId, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONObject("data");
-        var uname = data.getString("uname");
-        var uid = data.getLong("uid");
+        var data = ws.data.content.getJSONArray("info");
+        var danmaku = data.getString(1);
+        var uname = data.getJSONArray(2).getString(1);
+        var uid = data.getJSONArray(2).getLong(0);
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.data.name);
-        String msg = MsgUtils.builder().text("噔噔咚！").text("你所关注的用户 ").text(uname).text(" 进入了 ").text(ws.data.name).text(" 的直播间。").build();
+        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.data.name, danmaku);
+        String msg = MsgUtils.builder()
+                .text(uname).text(" 在 ").text(ws.data.name).text(" 的直播间发送了一条消息").text("\n")
+                .text("弹幕: ").text(danmaku)
+                .build();
         bot.sendGroupMsg(groupId, msg, true);
     }
 
     @Override
     public void handle(GuildMessageChannel channel, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONObject("data");
-        var uname = data.getString("uname");
-        var uid = data.getLong("uid");
+        var data = ws.data.content.getJSONArray("info");
+        var danmaku = data.getString(1);
+        var uname = data.getJSONArray(2).getString(1);
+        var uid = data.getJSONArray(2).getLong(0);
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.data.name);
+        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.data.name, danmaku);
         channel.createMessage(spec -> {
-            spec.addEmbed(em -> {
+            spec.addEmbed( em ->{
+                em.setDescription(MessageFormat.format("[{0}]({1}) 在 {2} 的直播间发送了一条消息", uname, "https://space.bilibili.com/"+uid, ws.data.name));
                 em.setColor(randomColor);
-                em.setDescription(MessageFormat.format("噔噔咚！ 你所关注的用户 [{0}]({1}) 进入了 {2} 的直播间。", uname, "https://space.bilibili.com/"+uid, ws.data.name));
-                em.addField("房间号", String.valueOf(ws.data.room), false);
+                em.addField("弹幕", danmaku, false);
             });
             spec.setComponents(
                     ActionRow.of(Button.link("https://live.bilibili.com/"+ws.data.room, ReactionEmoji.unicode("\uD83D\uDEAA"), "点击围观"))

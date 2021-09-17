@@ -1,7 +1,7 @@
-package com.ericlam.qqbot.valbot.redis.wshandle;
+package com.ericlam.qqbot.valbot.redis.blivehandle;
 
-import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBLiveHandle;
-import com.ericlam.qqbot.valbot.crossplatform.qq.QQBLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordBiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.qq.QQBiliLiveHandle;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.SuperChatMessage;
 import com.ericlam.qqbot.valbot.service.BilibiliLiveService;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 @Component
-public class SuperChatHandle implements QQBLiveHandle, DiscordBLiveHandle {
+public class SuperChatHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle {
 
     @Autowired
     private ObjectMapper mapper;

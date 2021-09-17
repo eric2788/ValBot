@@ -9,7 +9,8 @@ import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
         alias = {"设定"},
         subCommands = {
                 SettingTellDeleteCommand.class,
-                SettingYearlyCheckCommand.class
+                SettingYearlyCheckCommand.class,
+                SettingVerboseCommand.class
         }
 )
 public class SettingCommand implements GroupCommand {

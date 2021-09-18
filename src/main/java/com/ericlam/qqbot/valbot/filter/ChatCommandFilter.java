@@ -2,6 +2,7 @@ package com.ericlam.qqbot.valbot.filter;
 
 import com.ericlam.qqbot.valbot.crossplatform.qq.QQMessageEventSource;
 import com.ericlam.qqbot.valbot.manager.ChatCommandManager;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotPlugin;
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent;
@@ -38,7 +39,12 @@ public class ChatCommandFilter extends BotPlugin {
                         // do something ??
                         result = result.replace("help:", "");
                    }
-                   bot.sendGroupMsg(event.getGroupId(), result, true);
+                   bot.sendGroupMsg(event.getGroupId(),
+                           MsgUtils.builder()
+                                   .reply(event.getMessageId())
+                                   .text("指令列表").text("\n")
+                                   .text(result)
+                                   .build(), false);
                    break;
            }
 

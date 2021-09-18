@@ -1,4 +1,4 @@
-package com.ericlam.qqbot.valbot.command.live;
+package com.ericlam.qqbot.valbot.command.blive;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
@@ -16,23 +16,23 @@ import java.util.List;
 
 @Component
 @ChatCommand(
-        name = "uncare",
-        description = "删除高亮用户",
-        alias = {"删除", "不高亮"},
+        name = "care",
+        alias = {"关注", "高亮"},
+        description = "新增高亮用户",
         placeholders = {"<用户ID>"}
 )
-public class BLiveUncareCommand implements QQGroupCommand, DiscordGroupCommand {
+public class BLiveCareCommand implements QQGroupCommand, DiscordGroupCommand {
+
 
     @Autowired
     private ValDataService dataService;
-
 
     @Override
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
         long userId;
         try {
             userId = Long.parseLong(args.get(0));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             bot.sendGroupMsg(event.getGroupId(), MsgUtils
                     .builder()
                     .text("无效的用户ID")
@@ -40,19 +40,19 @@ public class BLiveUncareCommand implements QQGroupCommand, DiscordGroupCommand {
                     .build(), false);
             return;
         }
-        if (!dataService.getData().bLiveSettings.highlightUsers.contains(userId)){
+        if (dataService.getData().bLiveSettings.highlightUsers.contains(userId)) {
             bot.sendGroupMsg(event.getGroupId(),
                     MsgUtils
                             .builder()
-                            .text(userId+" 不存在列表中。")
+                            .text(userId + " 已经存在了")
                             .reply(event.getMessageId())
                             .build(), false);
             return;
         }
-        dataService.getData().bLiveSettings.highlightUsers.remove(userId);
+        dataService.getData().bLiveSettings.highlightUsers.add(userId);
         bot.sendGroupMsg(event.getGroupId(), MsgUtils
                 .builder()
-                .text("删除高亮用户 "+userId+" 成功。")
+                .text("新增高亮用户 " + userId + " 成功。")
                 .reply(event.getMessageId())
                 .build(), false);
     }
@@ -62,15 +62,15 @@ public class BLiveUncareCommand implements QQGroupCommand, DiscordGroupCommand {
         long userId;
         try {
             userId = Long.parseLong(args.get(0));
-        }catch (NumberFormatException e){
-           channel.createMessage(spec -> spec.setContent("无效的用户ID").setMessageReference(event.getMessage().getId())).subscribe();
+        } catch (NumberFormatException e) {
+            channel.createMessage(spec -> spec.setContent("无效的用户ID").setMessageReference(event.getMessage().getId())).subscribe();
             return;
         }
-        if (!dataService.getData().bLiveSettings.highlightUsers.contains(userId)){
-           channel.createMessage(spec -> spec.setContent(userId+" 不存在列表中。").setMessageReference(event.getMessage().getId())).subscribe();
+        if (dataService.getData().bLiveSettings.highlightUsers.contains(userId)) {
+            channel.createMessage(spec -> spec.setContent(userId + " 已经存在了").setMessageReference(event.getMessage().getId())).subscribe();
             return;
         }
-        dataService.getData().bLiveSettings.highlightUsers.remove(userId);
-        channel.createMessage(spec -> spec.setContent("删除高亮用户 "+userId+" 成功。").setMessageReference(event.getMessage().getId())).subscribe();
+        dataService.getData().bLiveSettings.highlightUsers.add(userId);
+        channel.createMessage(spec -> spec.setContent("新增高亮用户 " + userId + " 成功。").setMessageReference(event.getMessage().getId())).subscribe();
     }
 }

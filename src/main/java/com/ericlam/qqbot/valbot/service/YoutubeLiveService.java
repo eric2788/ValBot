@@ -6,11 +6,13 @@ import com.ericlam.qqbot.valbot.redis.YoutubeLiveListener;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
+import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -20,7 +22,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,40 +91,66 @@ public class YoutubeLiveService {
         return true;
     }
 
-    public CompletableFuture<String> getChannel(String channelUrl) {
+    public Mono<String> getChannelForUserName(String username){
+        if (this.channelIdCache.containsKey(username)) {
+            return Mono.just(this.channelIdCache.get(username));
+        }
+        Pattern pattern = getChannelPattern(username);
+        Mono<String> mono = Mono.create(sink -> {
+            try {
+                URL url = new URL("https://www.youtube.com/c/"+username);
+                httpRequest(username, pattern, sink, url);
+            } catch (IOException e) {
+                logger.error("Error while parsing custom url: ", e);
+                sink.error(e);
+            }
+        });
+        return mono.subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private void httpRequest(String username, Pattern pattern, MonoSink<String> sink, URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json");
+        InputStream stream = connection.getInputStream();
+        String content = new String(stream.readAllBytes());
+        Matcher matcher = pattern.matcher(content);
+        if (!matcher.find()) {
+            sink.error(new RequestException("频道 URL 解析失败"));
+        } else {
+            String channelId = matcher.group(1);
+            if (!channelId.startsWith("UC")){
+                logger.warn("Channel ID for {} is not started with UC: {}", username, channelId);
+                sink.error(new RequestException("频道 ID 解析失败。解析结果为: "+channelId));
+            }
+            this.channelIdCache.put(username, channelId);
+            sink.success(channelId);
+        }
+    }
+
+    public Mono<String> getChannel(String channelUrl) {
         Matcher channelFind = CHANNEL_URL_PATTERN.matcher(channelUrl);
         if (channelFind.find()) {
-            return CompletableFuture.completedFuture(channelFind.group(1));
+            return Mono.just(channelFind.group(1));
         }
         Matcher customUrlFind = CUSTOM_URL_PATTERN.matcher(channelUrl);
         if (!customUrlFind.find()) {
-            return CompletableFuture.completedFuture(null);
+            return Mono.error(new RequestException("无效的频道URL"));
         }
         String username = customUrlFind.group(1);
-        if (this.channelIdCache.containsKey(username)){
-            return CompletableFuture.completedFuture(this.channelIdCache.get(username));
+        if (this.channelIdCache.containsKey(username)) {
+            return Mono.just(this.channelIdCache.get(username));
         }
         Pattern pattern = getChannelPattern(username);
-        return CompletableFuture.supplyAsync(() -> {
+        Mono<String> mono = Mono.create(sink -> {
             try {
                 URL url = new URL(channelUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Content-Type", "application/json");
-                InputStream stream = connection.getInputStream();
-                String content = new String(stream.readAllBytes());
-                Matcher matcher = pattern.matcher(content);
-                if (!matcher.find()){
-                    return null;
-                }else{
-                    String channelId = matcher.group(1);
-                    this.channelIdCache.put(username, channelId);
-                    return channelId;
-                }
+                httpRequest(username, pattern, sink, url);
             } catch (IOException e) {
                 logger.error("Error while parsing custom url: ", e);
-                throw new RequestException(e.getMessage());
+                sink.error(e);
             }
         });
+        return mono.subscribeOn(Schedulers.boundedElastic());
     }
 }

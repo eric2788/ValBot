@@ -4,7 +4,7 @@ import com.ericlam.qqbot.valbot.command.CheckCommand;
 import com.ericlam.qqbot.valbot.command.SpeakCommand;
 import com.ericlam.qqbot.valbot.command.VoiceCommand;
 import com.ericlam.qqbot.valbot.command.random.RandomCommand;
-import com.ericlam.qqbot.valbot.command.live.BLiveCommand;
+import com.ericlam.qqbot.valbot.command.blive.BLiveCommand;
 import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
 import com.ericlam.qqbot.valbot.command.settings.SettingCommand;
 import com.ericlam.qqbot.valbot.command.test.TestCommand;

@@ -1,4 +1,4 @@
-package com.ericlam.qqbot.valbot.command.live;
+package com.ericlam.qqbot.valbot.command.blive;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;
@@ -38,20 +38,12 @@ public class BLiveTerminateCommand implements QQGroupCommand, DiscordGroupComman
                     .reply(event.getMessageId()).build(), false);
             return;
         }
-        if (liveService.stopListen(roomId)) {
-            bot.sendGroupMsg(event.getGroupId(), MsgUtils
-                    .builder()
-                    .text("已中止监听直播房间(" + roomId + ")。")
-                    .reply(event.getMessageId())
-                    .build(), false);
-        } else {
-            bot.sendGroupMsg(event.getGroupId(), MsgUtils
-                    .builder()
-                    .text("你尚未开始监听此直播房间。")
-                    .reply(event.getMessageId())
-                    .build(), false);
-        }
-
+        var msg = liveService.stopListen(roomId) ? "已中止监听直播房间(" + roomId + ")。" : "你尚未开始监听此直播房间。";
+        bot.sendGroupMsg(event.getGroupId(), MsgUtils
+                .builder()
+                .text(msg)
+                .reply(event.getMessageId())
+                .build(), false);
     }
 
     @Override
@@ -63,10 +55,7 @@ public class BLiveTerminateCommand implements QQGroupCommand, DiscordGroupComman
             channel.createMessage(spec -> spec.setContent("不是有效的房间号").setMessageReference(event.getMessage().getId())).subscribe();
             return;
         }
-        if (liveService.stopListen(roomId)) {
-            channel.createMessage(spec -> spec.setContent("已中止监听直播房间(" + roomId + ")。").setMessageReference(event.getMessage().getId())).subscribe();
-        } else {
-            channel.createMessage(spec -> spec.setContent("你尚未开始监听此直播房间。").setMessageReference(event.getMessage().getId())).subscribe();
-        }
+        String msg = liveService.stopListen(roomId) ? "已中止监听直播房间(" + roomId + ")。" : "你尚未开始监听此直播房间。";
+        channel.createMessage(spec -> spec.setContent(msg).setMessageReference(event.getMessage().getId())).subscribe();
     }
 }

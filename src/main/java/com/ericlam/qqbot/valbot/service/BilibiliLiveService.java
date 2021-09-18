@@ -10,6 +10,8 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -92,11 +94,11 @@ public class BilibiliLiveService {
     }
 
 
-    public CompletableFuture<LiveInfo> getRoomInfo(long roomId) {
+    public Mono<LiveInfo> getRoomInfo(long roomId) {
         if (roomInfo.containsKey(roomId)){
-            return CompletableFuture.completedFuture(roomInfo.get(roomId));
+            return Mono.just(roomInfo.get(roomId));
         }
-        return CompletableFuture.supplyAsync(() -> {
+        Mono<LiveInfo> mono = Mono.create(sink -> {
             try {
                 URL url = new URL("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + roomId);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -105,20 +107,17 @@ public class BilibiliLiveService {
                 InputStream stream = connection.getInputStream();
                 LiveInfo info = mapper.readValue(stream, LiveInfo.class);
                 this.roomInfo.put(roomId, info);
-                return info;
+                sink.success(info);
             } catch (IOException e) {
                 logger.error("Error while checking room is valid: ", e);
-                LiveInfo info = new LiveInfo();
-                info.code = 1;
-                info.message = e.getMessage();
-                info.msg = e.getMessage();
-                return info;
+                sink.error(e);
             }
         });
+        return mono.subscribeOn(Schedulers.boundedElastic());
     }
 
-    public CompletableFuture<Boolean> isValidRoom(long roomId){
-        return this.getRoomInfo(roomId).thenApply(info -> info.code == 0);
+    public Mono<Boolean> isValidRoom(long roomId){
+        return this.getRoomInfo(roomId).map(info -> info.code == 0);
     }
 
 

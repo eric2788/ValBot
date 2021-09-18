@@ -1,12 +1,12 @@
-package com.ericlam.qqbot.valbot.command.live;
+package com.ericlam.qqbot.valbot.command.blive;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
-import com.ericlam.qqbot.valbot.command.settings.SettingVerboseCommand;
 import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 
 
 @ChatCommand(
         name = "blive",
+        alias = {"b站", "b站直播"},
         description = "blive 直播间监听指令",
         subCommands = {
                 BLiveListenCommand.class,

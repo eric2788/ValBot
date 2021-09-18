@@ -1,4 +1,4 @@
-package com.ericlam.qqbot.valbot.command.live;
+package com.ericlam.qqbot.valbot.command.blive;
 
 import com.ericlam.qqbot.valbot.command.ChatCommand;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordGroupCommand;

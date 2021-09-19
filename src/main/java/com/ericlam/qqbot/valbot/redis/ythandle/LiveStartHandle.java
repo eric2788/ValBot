@@ -13,7 +13,6 @@ import discord4j.rest.util.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,10 +57,9 @@ public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
         var builder = MsgUtils.builder().text(info.channelName).text(" 正在油管直播").text("\n");
         var broadcastInfo = info.info;
         if (broadcastInfo != null){
-            builder.text("标题: ")
-                    .text(broadcastInfo.title).text("\n")
+            builder.text("标题: ").text(broadcastInfo.title).text("\n")
                     .text("开始时间: ").text(dateFormat.format(broadcastInfo.publishTime)).text("\n")
-                    .text("直播间: ").text(broadcastInfo.url);
+                    .text("直播间: ").text(getUrl(info));
             if (broadcastInfo.cover != null) {
                 builder.img(broadcastInfo.cover);
             }
@@ -74,6 +72,6 @@ public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
 
 
     static String getUrl(YoutubeLiveInfo info){
-        return Optional.ofNullable(info.info).map(b -> b.url).orElseGet(() -> MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
+        return Optional.ofNullable(info.info).map(b -> "https://www.youtube.com/watch?v="+b.id).orElseGet(() -> MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
     }
 }

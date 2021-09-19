@@ -56,15 +56,14 @@ public class LiveUpComingHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
         var builder = MsgUtils.builder().text(info.channelName).text(" 在油管有预定直播").text("\n");
         var broadcastInfo = info.info;
         if (broadcastInfo != null){
-            builder.text("标题: ")
-                    .text(broadcastInfo.title).text("\n")
+            builder.text("标题: ").text(broadcastInfo.title).text("\n")
                     .text("预定发布时间: ").text(dateFormat.format(broadcastInfo.publishTime)).text("\n")
-                    .text("直播间待机: ").text(broadcastInfo.url);
+                    .text("待机: ").text(LiveStartHandle.getUrl(info));
             if (broadcastInfo.cover != null) {
                 builder.img(broadcastInfo.cover);
             }
         }else{
-            builder.text("直播间待机： ").text(MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
+            builder.text("待机： ").text(MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
         }
         bot.sendGroupMsg(groupId, builder.build(), false);
     }

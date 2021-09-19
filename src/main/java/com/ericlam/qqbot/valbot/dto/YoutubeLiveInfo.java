@@ -40,7 +40,7 @@ public class YoutubeLiveInfo {
 
         public String title;
 
-        public String url;
+        public String id;
 
         public Date publishTime;
 
@@ -52,7 +52,7 @@ public class YoutubeLiveInfo {
             return "BroadcastInfo{" +
                     "cover='" + cover + '\'' +
                     ", title='" + title + '\'' +
-                    ", url='" + url + '\'' +
+                    ", id='" + id + '\'' +
                     ", publishTime=" + publishTime +
                     ", description='" + description + '\'' +
                     '}';

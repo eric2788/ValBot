@@ -13,7 +13,7 @@
 
     <groupId>com.ericlam.qqbot</groupId>
     <artifactId>valqqbot</artifactId>
-    <version>0.9</version>
+    <version>0.10</version>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>

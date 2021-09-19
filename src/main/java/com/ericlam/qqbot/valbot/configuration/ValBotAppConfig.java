@@ -9,6 +9,7 @@ import com.ericlam.qqbot.valbot.command.response.CustomResponseCommand;
 import com.ericlam.qqbot.valbot.command.settings.SettingCommand;
 import com.ericlam.qqbot.valbot.command.test.TestCommand;
 import com.ericlam.qqbot.valbot.command.yesno.YesNoCommand;
+import com.ericlam.qqbot.valbot.command.youtube.YoutubeCommand;
 import com.ericlam.qqbot.valbot.crossplatform.ChatResponse;
 import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
 import com.ericlam.qqbot.valbot.job.ReferenceEssenceJob;
@@ -156,7 +157,8 @@ public class ValBotAppConfig {
                 TestCommand.class,
                 VoiceCommand.class,
                 RandomCommand.class,
-                SettingCommand.class
+                SettingCommand.class,
+                YoutubeCommand.class
         );
     }
 

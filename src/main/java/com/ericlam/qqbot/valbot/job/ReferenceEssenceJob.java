@@ -71,7 +71,7 @@ public class ReferenceEssenceJob implements Job {
             LOGGER.debug("无，已略过。");
         }
 
-        Flux.just(list.toArray(EssenceInfo[]::new))
+        Flux.fromIterable(list)
                 .filter(info -> toCalender(info.getSenderTime()).get(dayField()) == today())
                 .filter(info -> isNotToday(info.getSenderTime())) // not this year / this month
                 .mapNotNull(info -> {

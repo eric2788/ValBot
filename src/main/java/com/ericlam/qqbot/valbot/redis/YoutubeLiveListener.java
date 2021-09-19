@@ -50,6 +50,8 @@ public class YoutubeLiveListener implements MessageListener {
     private BeanFactory beanFactory;
 
 
+    private String lastStatus = YoutubeLiveInfo.LiveStatus.IDLE;
+
     @Override
     public void onMessage(@NotNull Message message, byte[] bytes) {
         String youtubeChannel = new String(message.getChannel()).replace("ylive:", "");
@@ -68,8 +70,10 @@ public class YoutubeLiveListener implements MessageListener {
                 exceptionStatus.add(info.status);
                 return;
             }
+            if (lastStatus.equals(info.status)) return; // 同样的状态不广播
             LOGGER.debug("收到从频道 {} 的指令: {}", youtubeChannel, info);
             this.handleLiveData(handler, youtubeChannel, info);
+            lastStatus = info.status; // 设置现时状态
         } catch (IOException e) {
             if (dataService.getData().settings.verbose) {
                 bLiveSubscribers.forEach(sub -> sub.doOnError(e, youtubeChannel));

@@ -15,6 +15,7 @@ import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -43,11 +44,11 @@ public class YoutubeLiveService {
     private final Map<String, String> channelIdCache = new ConcurrentHashMap<>();
     private final Map<String, MessageListener> listenerMap = new HashMap<>();
 
-    private static final Pattern CUSTOM_URL_PATTERN = Pattern.compile("(https?:\\/\\/)?(www\\.)?youtube\\.com\\/c\\/([\\w-]+)");
-    private static final Pattern CHANNEL_URL_PATTERN = Pattern.compile("(https?:\\/\\/)?(www\\.)?youtube\\.com\\/(channel|user)\\/([\\w-]+)");
+    private static final Pattern CUSTOM_URL_PATTERN = Pattern.compile("(https?:\\/\\/)?(www\\.)?youtube\\.com\\/c\\/(?<username>[\\w]+)");
+    private static final Pattern CHANNEL_URL_PATTERN = Pattern.compile("(https?:\\/\\/)?(www\\.)?youtube\\.com\\/(channel|user)\\/(?<id>[\\w-]+)");
 
     private static Pattern getChannelPattern(String username) {
-        return Pattern.compile("\"browseId\":\"([\\w-]+)\",\"canonicalBaseUrl\":\"\\/c\\/" + username + "\"");
+        return Pattern.compile("\"browseId\":\"(?<id>[\\w-]+)\",\"canonicalBaseUrl\":\"\\/c\\/" + username + "\"");
     }
 
     public YoutubeLiveService(ValDataService dataService) {
@@ -112,13 +113,19 @@ public class YoutubeLiveService {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-Type", "application/json");
-        InputStream stream = connection.getInputStream();
+        InputStream stream;
+        try {
+            stream = connection.getInputStream();
+        }catch (FileNotFoundException e){
+            sink.error(new RequestException("无效的频道URL 或 找不到该用户名: "+e.getMessage()));
+            return;
+        }
         String content = new String(stream.readAllBytes());
         Matcher matcher = pattern.matcher(content);
         if (!matcher.find()) {
             sink.error(new RequestException("频道 URL 解析失败"));
         } else {
-            String channelId = matcher.group(1);
+            String channelId = matcher.group("id");
             if (!channelId.startsWith("UC")){
                 logger.warn("Channel ID for {} is not started with UC: {}", username, channelId);
                 sink.error(new RequestException("频道 ID 解析失败。解析结果为: "+channelId));
@@ -131,13 +138,13 @@ public class YoutubeLiveService {
     public Mono<String> getChannel(String channelUrl) {
         Matcher channelFind = CHANNEL_URL_PATTERN.matcher(channelUrl);
         if (channelFind.find()) {
-            return Mono.just(channelFind.group(1));
+            return Mono.just(channelFind.group("id"));
         }
         Matcher customUrlFind = CUSTOM_URL_PATTERN.matcher(channelUrl);
         if (!customUrlFind.find()) {
             return Mono.error(new RequestException("无效的频道URL"));
         }
-        String username = customUrlFind.group(1);
+        String username = customUrlFind.group("username");
         if (this.channelIdCache.containsKey(username)) {
             return Mono.just(this.channelIdCache.get(username));
         }

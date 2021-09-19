@@ -11,6 +11,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -41,13 +42,14 @@ public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
             return;
         }
         liveService.getRoomInfo(roomId)
-                .doOnError(ex -> {
+                .onErrorResume(ex -> {
                     ex.printStackTrace();
                     bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
                             .reply(event.getMessageId())
                             .text("监听房间时出现错误: ")
                             .text(ex.getMessage())
                             .build(), false);
+                    return Mono.empty();
                 })
                 .subscribe(info -> {
 
@@ -76,12 +78,6 @@ public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
             return;
         }
         liveService.getRoomInfo(roomId)
-                .doOnError(ex -> {
-                    ex.printStackTrace();
-                    channel.createMessage(spec ->
-                            spec.setContent("监听房间时出现错误: "+ex.getMessage())
-                                    .setMessageReference(event.getMessage().getId())).subscribe();
-                })
                 .flatMap(info -> {
                     if (info.code == 1){
                         return channel.createMessage(spec ->
@@ -90,6 +86,12 @@ public class BLiveListenCommand implements QQGroupCommand, DiscordGroupCommand {
                     }
                     var msg = liveService.startListen(roomId) ? "开始监听直播房间(" + roomId + ")。" : "该直播间(" + roomId + ")已经启动监听。";
                     return channel.createMessage(spec -> spec.setContent(msg).setMessageReference(event.getMessage().getId()));
+                })
+                .onErrorResume(ex -> {
+                    ex.printStackTrace();
+                    return channel.createMessage(spec ->
+                            spec.setContent("监听房间时出现错误: "+ex.getMessage())
+                                    .setMessageReference(event.getMessage().getId()));
                 })
                 .subscribe();
 

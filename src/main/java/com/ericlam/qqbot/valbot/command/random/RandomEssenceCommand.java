@@ -38,7 +38,14 @@ public class RandomEssenceCommand implements QQGroupCommand, DiscordGroupCommand
 
     @Override
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
-        Flux.just(botService.getGroupEssenceMsgList(bot, event.getGroupId()).getData().toArray(EssenceInfo[]::new))
+        Flux.defer(() -> Flux.fromIterable(botService.getGroupEssenceMsgList(bot, event.getGroupId()).getData()))
+                .doOnError(ex -> {
+                    ex.printStackTrace();
+                    bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
+                            .text("獲取群消息时出现错误: " + ex.getMessage())
+                            .reply(event.getMessageId())
+                            .build(), false);
+                })
                 .mapNotNull(msg -> {
                     var data = bot.getMsg(msg.getMessageId());
                     if (data.getRetcode() == -1) {
@@ -47,7 +54,8 @@ public class RandomEssenceCommand implements QQGroupCommand, DiscordGroupCommand
                         return data.getData();
                     }
                 })
-                .collect(Collectors.toList()).subscribe(list -> {
+                .collect(Collectors.toList())
+                .subscribe(list -> {
                     if (list.isEmpty()) {
                         bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().reply(event.getMessageId()).text("无群精华消息。").build(), false);
                         return;

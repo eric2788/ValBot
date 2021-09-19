@@ -26,7 +26,7 @@ public class BroadcastHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle 
     @Override
     public void handle(Bot bot, long groupId, long room, BLiveWebSocketData ws) throws IOException {
         var builder = MsgUtils.builder()
-                .text(ws.data.name).text(" 正在直播").text("\n")
+                .text(ws.data.name).text(" 正在B站直播").text("\n")
                 .text("标题: ").text(ws.data.title).text("\n")
                 .text("直播间: ").text("https://live.bilibili.com/").text(String.valueOf(room));
         if (ws.data.cover != null) {
@@ -39,7 +39,7 @@ public class BroadcastHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle 
     public void handle(GuildMessageChannel channel, long room, BLiveWebSocketData ws) throws IOException {
         channel.createMessage(spec -> {
             spec.addEmbed(em -> {
-                em.setDescription(MessageFormat.format("[{0}]({1}) 正在直播", ws.data.name, "https://space.bilibili.com/"+ws.data.uid));
+                em.setDescription(MessageFormat.format("[{0}]({1}) 正在B站直播", ws.data.name, "https://space.bilibili.com/"+ws.data.uid));
                 em.setColor(randomColor);
                 em.addField("标题", ws.data.title, false);
                 em.addField("房间号", String.valueOf(room), false);

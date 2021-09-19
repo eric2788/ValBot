@@ -9,7 +9,9 @@ import com.ericlam.qqbot.valbot.crossplatform.GroupCommand;
         description = "油管指令",
         subCommands = {
                 YoutubeListenCommand.class,
-                YoutubeTerminateCommand.class
+                YoutubeTerminateCommand.class,
+                YoutubeListeningCommand.class,
+                YoutubeConvertCommand.class
         }
 )
 public class YoutubeCommand implements GroupCommand {

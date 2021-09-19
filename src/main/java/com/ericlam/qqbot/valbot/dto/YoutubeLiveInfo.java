@@ -9,6 +9,7 @@ public class YoutubeLiveInfo {
 
         public static final String LIVE = "live";
         public static final String IDLE = "idle";
+        public static final String UPCOMING = "upcoming";
 
     }
 

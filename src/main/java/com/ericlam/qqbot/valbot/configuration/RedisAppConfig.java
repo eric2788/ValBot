@@ -14,6 +14,7 @@ import com.ericlam.qqbot.valbot.redis.blivehandle.RoomEnterHandle;
 import com.ericlam.qqbot.valbot.redis.blivehandle.SuperChatHandle;
 import com.ericlam.qqbot.valbot.redis.ythandle.LiveEndHandle;
 import com.ericlam.qqbot.valbot.redis.ythandle.LiveStartHandle;
+import com.ericlam.qqbot.valbot.redis.ythandle.LiveUpComingHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -65,7 +66,8 @@ public class RedisAppConfig {
     public Map<String, Class<? extends YTLiveHandle>> ytHandlers(){
         return Map.of(
                 YoutubeLiveInfo.LiveStatus.LIVE, LiveStartHandle.class,
-                YoutubeLiveInfo.LiveStatus.IDLE, LiveEndHandle.class
+                YoutubeLiveInfo.LiveStatus.IDLE, LiveEndHandle.class,
+                YoutubeLiveInfo.LiveStatus.UPCOMING, LiveUpComingHandle.class
         );
     }
 

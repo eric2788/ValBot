@@ -6,10 +6,12 @@ import com.ericlam.qqbot.valbot.dto.YoutubeLiveInfo;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 
+@Component
 public class LiveEndHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
 
     @Override

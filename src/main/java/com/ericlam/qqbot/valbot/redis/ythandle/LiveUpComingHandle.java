@@ -37,7 +37,6 @@ public class LiveUpComingHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
                 if (broadcastInfo != null){
                     em.addField("标题", broadcastInfo.title, false);
                     em.addField("预定发布时间", dateFormat.format(broadcastInfo.publishTime), false);
-                    em.setTimestamp(broadcastInfo.publishTime.toInstant());
                     if (broadcastInfo.cover != null){
                         em.setImage(broadcastInfo.cover);
                     }
@@ -56,7 +55,7 @@ public class LiveUpComingHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
         var builder = MsgUtils.builder().text(info.channelName).text(" 在油管有预定直播").text("\n");
         var broadcastInfo = info.info;
         if (broadcastInfo != null){
-            builder.text("标题: ").text(broadcastInfo.title).text("\n")
+            builder//.text("标题: ").text(broadcastInfo.title).text("\n")
                     .text("预定发布时间: ").text(dateFormat.format(broadcastInfo.publishTime)).text("\n")
                     .text("待机: ").text(LiveStartHandle.getUrl(info));
             if (broadcastInfo.cover != null) {

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Component
 public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
@@ -38,7 +39,6 @@ public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
                 if (broadcastInfo != null){
                     em.addField("标题", broadcastInfo.title, false);
                     em.addField("发布时间", dateFormat.format(broadcastInfo.publishTime), false);
-                    em.setTimestamp(broadcastInfo.publishTime.toInstant());
                     if (broadcastInfo.cover != null){
                         em.setImage(broadcastInfo.cover);
                     }
@@ -57,7 +57,7 @@ public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
         var builder = MsgUtils.builder().text(info.channelName).text(" 正在油管直播").text("\n");
         var broadcastInfo = info.info;
         if (broadcastInfo != null){
-            builder.text("标题: ").text(broadcastInfo.title).text("\n")
+            builder//.text("标题: ").text(broadcastInfo.title).text("\n")
                     .text("开始时间: ").text(dateFormat.format(broadcastInfo.publishTime)).text("\n")
                     .text("直播间: ").text(getUrl(info));
             if (broadcastInfo.cover != null) {
@@ -72,6 +72,6 @@ public class LiveStartHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
 
 
     static String getUrl(YoutubeLiveInfo info){
-        return Optional.ofNullable(info.info).map(b -> "https://www.youtube.com/watch?v="+b.id).orElseGet(() -> MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
+        return Optional.ofNullable(info.info).map(b -> "https://youtu.be/"+b.id).orElseGet(() -> MessageFormat.format("https://youtube.com/channel/{0}/live", info.channelId));
     }
 }

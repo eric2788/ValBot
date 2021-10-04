@@ -1,12 +1,15 @@
 package com.ericlam.qqbot.valbot.crossplatform.qq;
 
 import com.ericlam.qqbot.valbot.crossplatform.livehandle.BiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.livehandle.TweetsHandle;
 import com.ericlam.qqbot.valbot.crossplatform.livehandle.YTLiveHandle;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.BiliLiveSubscriber;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.LiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.TwitterSubscriber;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.YTLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
+import com.ericlam.qqbot.valbot.dto.TweetStreamData;
 import com.ericlam.qqbot.valbot.dto.YoutubeLiveInfo;
 import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.BotContainer;
@@ -20,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Component
-public class QQLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTLiveSubscriber {
+public class QQLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTLiveSubscriber, TwitterSubscriber {
 
 
     @Value("${val.group}")
@@ -88,5 +91,16 @@ public class QQLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTL
             return;
         }
         qqytLiveHandle.handle(bot, groupId, channelId, info);
+    }
+
+    @Override
+    public void subscribe(TweetsHandle handle, String username, TweetStreamData data) throws IOException {
+        if (!(handle instanceof QQTweetHandle tweetsHandle)) return;
+        var bot = container.robots.get(botId);
+        if (bot == null){
+            logger.warn("QQ机器人未上线({})，已略过。", botId);
+            return;
+        }
+        tweetsHandle.handle(bot, groupId, username, data);
     }
 }

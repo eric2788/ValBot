@@ -2,12 +2,15 @@ package com.ericlam.qqbot.valbot.crossplatform.discord;
 
 import com.ericlam.qqbot.valbot.configuration.properties.DiscordConfig;
 import com.ericlam.qqbot.valbot.crossplatform.livehandle.BiliLiveHandle;
+import com.ericlam.qqbot.valbot.crossplatform.livehandle.TweetsHandle;
 import com.ericlam.qqbot.valbot.crossplatform.livehandle.YTLiveHandle;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.BiliLiveSubscriber;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.LiveSubscriber;
+import com.ericlam.qqbot.valbot.crossplatform.subscriber.TwitterSubscriber;
 import com.ericlam.qqbot.valbot.crossplatform.subscriber.YTLiveSubscriber;
 import com.ericlam.qqbot.valbot.dto.BLiveWebSocketData;
 import com.ericlam.qqbot.valbot.dto.LiveRoomStatus;
+import com.ericlam.qqbot.valbot.dto.TweetStreamData;
 import com.ericlam.qqbot.valbot.dto.YoutubeLiveInfo;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
@@ -23,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class DiscordLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTLiveSubscriber {
+public class DiscordLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber, YTLiveSubscriber, TwitterSubscriber {
 
     private final long logChannel;
     private final long newsChannel;
@@ -111,5 +114,17 @@ public class DiscordLiveSubscriber implements LiveSubscriber, BiliLiveSubscriber
         }
         var channel = newsChannel.get();
         discordYTLiveHandle.handle(channel, channelId, info);
+    }
+
+    @Override
+    public void subscribe(TweetsHandle handle, String username, TweetStreamData data) throws IOException {
+        if (!(handle instanceof DiscordTweetHandle tweetHandle)) return;
+        var newsChannel = getNewsChannel();
+        if (newsChannel.isEmpty()) {
+            logger.warn("找不到广播频道 {} ，已略过。", logChannel);
+            return;
+        }
+        var channel = newsChannel.get();
+        tweetHandle.handle(channel, username, data);
     }
 }

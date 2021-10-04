@@ -14,6 +14,7 @@ public class ValBotData implements Serializable {
 
     public BLiveSettings bLiveSettings = new BLiveSettings();
     public YoutubeSettings youtubeSettings = new YoutubeSettings();
+    public TwitterSettings twitterSettings = new TwitterSettings();
 
     public CommonSettings settings = new CommonSettings();
 

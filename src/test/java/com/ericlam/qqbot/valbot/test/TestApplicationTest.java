@@ -10,6 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
+
 class TestApplicationTest {
 
     void convertToActionList() {
@@ -31,6 +36,13 @@ class TestApplicationTest {
         return o.toJavaObject(new TypeReference<T>(){});
     }
 
+
+
+    void parseDate() throws ParseException {
+        String time = "Mon Oct 04 17:05:00 +0000 2021";
+        var d = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss +zzzz uuuu");
+        System.out.println(d.parse(time));
+    }
 
     @Getter
     @Setter

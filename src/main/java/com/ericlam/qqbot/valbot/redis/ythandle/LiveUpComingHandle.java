@@ -55,7 +55,7 @@ public class LiveUpComingHandle implements DiscordYTLiveHandle, QQYTLiveHandle {
         var builder = MsgUtils.builder().text(info.channelName).text(" 在油管有预定直播").text("\n");
         var broadcastInfo = info.info;
         if (broadcastInfo != null){
-            builder//.text("标题: ").text(broadcastInfo.title).text("\n")
+            builder//.text("标题: ").text(broadcastInfo.title).text("\n") //標題會導致風控
                     .text("预定发布时间: ").text(dateFormat.format(broadcastInfo.publishTime)).text("\n")
                     .text("待机: ").text(LiveStartHandle.getUrl(info));
             if (broadcastInfo.cover != null) {

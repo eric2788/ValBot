@@ -54,7 +54,7 @@ public class ReplyTweetHandle implements DiscordTweetHandle, QQTweetHandle {
     }
 
     static String createTweetMessage(TweetStreamData data, MsgUtils builder) {
-        if (data.entities.urls != null) {
+        if (data.entities.urls != null && !data.entities.urls.isEmpty()) {
             builder.text("链接: ").text("\n");
             for (var url : data.entities.urls) {
                 builder.text(url.expanded_url).text("\n");

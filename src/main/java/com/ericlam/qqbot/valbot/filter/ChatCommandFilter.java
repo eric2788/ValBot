@@ -36,23 +36,25 @@ public class ChatCommandFilter extends BotPlugin {
                    break;
                default:
                    if (result.startsWith("help:")){ // 返回幫助訊息
-                        // do something ??
                         result = result.replace("help:", "");
-                   }
-                   /* 發群會被風控，改成私訊？
-                   bot.sendGroupMsg(event.getGroupId(),
-                           MsgUtils.builder()
-                                   .reply(event.getMessageId())
-                                   .text("指令列表").text("\n")
-                                   .text(result)
-                                   .build(), false);
+                        /* 發群會被風控，改成私訊？
+                       bot.sendGroupMsg(event.getGroupId(),
+                               MsgUtils.builder()
+                                       .reply(event.getMessageId())
+                                       .text("指令列表").text("\n")
+                                       .text(result)
+                                       .build(), false);
 
-                    */
-                   bot.sendPrivateMsg(event.getUserId(),
-                            MsgUtils.builder()
-                                    .text("指令列表").text("\n")
-                                    .text(result)
-                                    .build(), false);
+                        */
+                       bot.sendPrivateMsg(event.getUserId(),
+                               MsgUtils.builder()
+                                       .text("指令列表").text("\n")
+                                       .text(result)
+                                       .build(), false);
+                   }else{ // 返回普通訊息
+                       bot.sendGroupMsg(event.getGroupId(), result, true);
+                   }
+
                    break;
            }
 

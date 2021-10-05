@@ -3,6 +3,7 @@ package com.ericlam.qqbot.valbot.redis.tweethandle;
 import com.ericlam.qqbot.valbot.crossplatform.discord.DiscordTweetHandle;
 import com.ericlam.qqbot.valbot.crossplatform.qq.QQTweetHandle;
 import com.ericlam.qqbot.valbot.dto.TweetStreamData;
+import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -27,7 +28,6 @@ public class RetweetWithTextHandle implements DiscordTweetHandle, QQTweetHandle 
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
                 em.setAuthor(data.user.name, "https://twitter.com/"+username, data.user.profile_image_url_https);
-                em.setThumbnail(data.user.profile_background_image_url_https);
                 em.setDescription(MessageFormat.format("{0}({1}) 转发了一则推文: ", data.user.name, username));
                 if (data.text != null){
                     em.addField("附文", data.text, false);
@@ -56,7 +56,13 @@ public class RetweetWithTextHandle implements DiscordTweetHandle, QQTweetHandle 
 
     @Override
     public void handle(Bot bot, long groupId, String username, TweetStreamData data) throws IOException {
-        // skip (防止洗屏)
+        var builder = MsgUtils.builder()
+                .text(data.user.name + " 分享了一则推文: ").text("\n");
+                if (data.quoted_status != null){
+                    builder.text("转发贴文: "+MessageFormat.format("https://twitter.com/{0}/status/{1}", data.quoted_status.user.screen_name, data.quoted_status_id_str)).text("\n");
+                }
+                builder.text("附文: "+data.text).text("\n");
+        bot.sendGroupMsg(groupId, ReplyTweetHandle.createTweetMessage(data, builder), false);
     }
 
 }

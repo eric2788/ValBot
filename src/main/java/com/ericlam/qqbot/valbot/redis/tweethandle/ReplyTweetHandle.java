@@ -27,7 +27,6 @@ public class ReplyTweetHandle implements DiscordTweetHandle, QQTweetHandle {
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
                 em.setAuthor(data.user.name, "https://twitter.com/" + username, data.user.profile_image_url_https);
-                em.setThumbnail(data.user.profile_background_image_url_https);
                 em.setDescription(MessageFormat.format("{0}({1}) 回复了 {2} 的一则推文: ", data.user.name, username, data.in_reply_to_screen_name));
                 em.addField("回复贴文", MessageFormat.format("https://twitter.com/{0}/status/{1}", data.in_reply_to_screen_name, data.in_reply_to_status_id_str), false);
                 em.addField("回复内容", data.text, false);

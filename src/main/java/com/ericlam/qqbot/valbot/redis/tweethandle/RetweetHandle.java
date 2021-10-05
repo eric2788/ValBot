@@ -30,7 +30,6 @@ public class RetweetHandle implements DiscordTweetHandle, QQTweetHandle {
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
                 em.setAuthor(data.user.name, "https://twitter.com/"+username, data.user.profile_image_url_https);
-                em.setThumbnail(data.user.profile_background_image_url_https);
                 em.setDescription(MessageFormat.format("{0}({1}) 转发了一则推文: ", data.user.name, username));
                 em.setTimestamp(Instant.ofEpochMilli(data.timestamp_ms));
             });
@@ -45,7 +44,6 @@ public class RetweetHandle implements DiscordTweetHandle, QQTweetHandle {
         spec.addEmbed(em -> {
             em.setColor(randomColor);
             em.setAuthor(status.user.name, "https://twitter.com/"+status.user.screen_name, status.user.profile_image_url_https);
-            em.setThumbnail(status.user.profile_background_image_url_https);
             if (status.text != null){
                 em.addField("内容", status.text, false);
             }

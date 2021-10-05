@@ -24,7 +24,20 @@ public class TweetStreamData {
     public long timestamp_ms;
     public boolean truncated;
     public TweetUser user;
+
+    // retweet with text
     public boolean is_quote_status;
+    public long quoted_status_id;
+    public String quoted_status_id_str;
+    @Nullable
+    public TweetStreamData quoted_status;
+
+    // reply
+    public long in_reply_to_status_id;
+    public String in_reply_to_status_id_str;
+    public long in_reply_to_user_id;
+    public String in_reply_to_user_id_str;
+    public String in_reply_to_screen_name;
 
     public boolean possibly_sensitive;
 
@@ -91,7 +104,23 @@ public class TweetStreamData {
         return retweeted_status != null;
     }
 
+    public boolean isRetweetWithText(){
+        return !isRetweet() && quoted_status != null;
+    }
+
+    public boolean isReply(){
+        return in_reply_to_screen_name != null;
+    }
+
     public enum Command {
-        TWEET, RETWEET, DELETE
+        TWEET, RETWEET, DELETE, REPLY, RETWEET_WITH_TEXT
+    }
+
+    public Command getCommand(){
+        if (isDeleteTweet()) return Command.DELETE;
+        else if (isRetweet()) return Command.RETWEET;
+        else if (isRetweetWithText()) return Command.RETWEET_WITH_TEXT;
+        else if (isReply()) return Command.REPLY;
+        else return Command.TWEET;
     }
 }

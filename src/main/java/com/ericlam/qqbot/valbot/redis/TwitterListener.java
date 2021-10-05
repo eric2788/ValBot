@@ -22,12 +22,16 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class TwitterListener implements MessageListener {
+
+    private static final Set<TweetStreamData.Command> exceptionCommands = new HashSet<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterListener.class);
 
@@ -51,10 +55,14 @@ public class TwitterListener implements MessageListener {
         String username = new String(message.getChannel()).replace("twitter:", "");
         try {
             var data = mapper.readValue(message.getBody(), TweetStreamData.class);
-            TweetStreamData.Command status = TweetStreamData.Command.TWEET;
-            if (data.isDeleteTweet()) status = TweetStreamData.Command.DELETE;
-            else if (data.isRetweet()) status = TweetStreamData.Command.RETWEET;
+            TweetStreamData.Command status = data.getCommand();
+            if (exceptionCommands.contains(status)) return;
             Class<? extends TweetsHandle> handle = tweetHandlers.get(status);
+            if (handle == null){
+                LOGGER.warn("無效的指令: {}, 已略過。", status);
+                exceptionCommands.add(status);
+                return;
+            }
             LOGGER.debug("收到从推特用户 {} 的新指令: {}", username, status);
             this.handleLiveData(handle, username, data);
         }catch (IOException e){

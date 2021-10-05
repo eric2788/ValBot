@@ -5,21 +5,18 @@ import com.ericlam.qqbot.valbot.crossplatform.qq.QQTweetHandle;
 import com.ericlam.qqbot.valbot.dto.TweetStreamData;
 import com.mikuac.shiro.core.Bot;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
-import discord4j.core.spec.MessageCreateSpec;
+import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class RetweetHandle implements DiscordTweetHandle, QQTweetHandle {
+public class RetweetWithTextHandle implements DiscordTweetHandle, QQTweetHandle {
 
     @Resource(name = "random")
     private Color randomColor;
@@ -32,36 +29,34 @@ public class RetweetHandle implements DiscordTweetHandle, QQTweetHandle {
                 em.setAuthor(data.user.name, "https://twitter.com/"+username, data.user.profile_image_url_https);
                 em.setThumbnail(data.user.profile_background_image_url_https);
                 em.setDescription(MessageFormat.format("{0}({1}) 转发了一则推文: ", data.user.name, username));
+                if (data.text != null){
+                    em.addField("附文", data.text, false);
+                }
+                if (data.entities.urls != null && !data.entities.urls.isEmpty()) {
+                    em.addField("链接", data.entities.urls.stream().map(m -> m.url).collect(Collectors.joining("\n")), false);
+                }
                 em.setTimestamp(Instant.ofEpochMilli(data.timestamp_ms));
             });
-            if (data.retweeted_status != null){
-                var status = data.retweeted_status;
-                createRetweetEmbed(spec, status, randomColor);
+            if (data.entities.media != null ){
+                for (TweetStreamData.Media media : data.entities.media) {
+                    spec.addEmbed(em -> em.setImage(media.media_url_https));
+                }
+            }
+            if (data.quoted_status != null){
+                var status = data.quoted_status;
+                RetweetHandle.createRetweetEmbed(spec, status, randomColor);
+                if (status.entities.media != null){
+                    for (TweetStreamData.Media media : status.entities.media) {
+                        spec.addEmbed(em -> em.setImage(media.media_url_https));
+                    }
+                }
             }
         }).subscribe();
-    }
-
-    static void createRetweetEmbed( MessageCreateSpec spec, TweetStreamData status, Color randomColor) {
-        spec.addEmbed(em -> {
-            em.setColor(randomColor);
-            em.setAuthor(status.user.name, "https://twitter.com/"+status.user.screen_name, status.user.profile_image_url_https);
-            em.setThumbnail(status.user.profile_background_image_url_https);
-            if (status.text != null){
-                em.addField("内容", status.text, false);
-            }
-            if (status.entities.urls != null && !status.entities.urls.isEmpty()) {
-                em.addField("链接", status.entities.urls.stream().map(m -> m.expanded_url).collect(Collectors.joining("\n")), false);
-            }
-        });
-        if (status.extended_entities != null && status.extended_entities.media != null){
-            for (TweetStreamData.Media media : status.extended_entities.media) {
-                spec.addEmbed(em -> em.setImage(media.media_url_https));
-            }
-        }
     }
 
     @Override
     public void handle(Bot bot, long groupId, String username, TweetStreamData data) throws IOException {
         // skip (防止洗屏)
     }
+
 }

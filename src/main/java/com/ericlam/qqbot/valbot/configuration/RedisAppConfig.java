@@ -14,9 +14,7 @@ import com.ericlam.qqbot.valbot.redis.blivehandle.BroadcastHandle;
 import com.ericlam.qqbot.valbot.redis.blivehandle.DanmuHandle;
 import com.ericlam.qqbot.valbot.redis.blivehandle.RoomEnterHandle;
 import com.ericlam.qqbot.valbot.redis.blivehandle.SuperChatHandle;
-import com.ericlam.qqbot.valbot.redis.tweethandle.DeleteTweetHandle;
-import com.ericlam.qqbot.valbot.redis.tweethandle.NewTweetHandle;
-import com.ericlam.qqbot.valbot.redis.tweethandle.RetweetHandle;
+import com.ericlam.qqbot.valbot.redis.tweethandle.*;
 import com.ericlam.qqbot.valbot.redis.ythandle.LiveEndHandle;
 import com.ericlam.qqbot.valbot.redis.ythandle.LiveStartHandle;
 import com.ericlam.qqbot.valbot.redis.ythandle.LiveUpComingHandle;
@@ -81,7 +79,9 @@ public class RedisAppConfig {
         return Map.of(
                 TweetStreamData.Command.TWEET, NewTweetHandle.class,
                 TweetStreamData.Command.RETWEET, RetweetHandle.class,
-                TweetStreamData.Command.DELETE, DeleteTweetHandle.class
+                TweetStreamData.Command.DELETE, DeleteTweetHandle.class,
+                TweetStreamData.Command.RETWEET_WITH_TEXT, RetweetWithTextHandle.class,
+                TweetStreamData.Command.REPLY, ReplyTweetHandle.class
         );
     }
 

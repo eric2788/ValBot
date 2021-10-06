@@ -51,6 +51,10 @@ public class ChatCommandFilter extends BotPlugin {
                                        .text("指令列表").text("\n")
                                        .text(result)
                                        .build(), false);
+                       bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder()
+                               .text("已私聊你指令列表。如无，请检查有没有加我好友谢谢")
+                               .reply(event.getMessageId())
+                               .build(), false);
                    }else{ // 返回普通訊息
                        bot.sendGroupMsg(event.getGroupId(), result, true);
                    }

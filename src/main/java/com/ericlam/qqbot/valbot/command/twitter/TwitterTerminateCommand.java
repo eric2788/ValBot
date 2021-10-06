@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 @ChatCommand(
-        name = "termiante",
+        name = "terminate",
         alias = {"中止", "中止监听"},
         placeholders = {"<用户ID>"},
         description = "中止监听用户"

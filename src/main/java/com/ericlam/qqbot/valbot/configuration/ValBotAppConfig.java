@@ -106,7 +106,7 @@ public class ValBotAppConfig {
                 .forJob(referenceEssence())
                 .withIdentity("referenceEssence-per-day")
                 .withDescription("do it per day")
-                .withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24))
+                .withSchedule(SimpleScheduleBuilder.repeatHourlyForever(1))
                 .build();
     }
 

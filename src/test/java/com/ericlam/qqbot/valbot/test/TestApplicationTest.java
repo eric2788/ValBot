@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 class TestApplicationTest {
@@ -37,6 +39,21 @@ class TestApplicationTest {
     }
 
 
+    @Test
+    void testDuration() throws InterruptedException {
+        var prev = System.currentTimeMillis();
+        Thread.sleep(5000);
+        var now = System.currentTimeMillis();
+        var duration = Duration.between(
+                Instant.ofEpochMilli(prev),
+                Instant.ofEpochMilli(now));
+        System.out.println(duration.getSeconds());
+        duration = Duration.between(
+                Instant.ofEpochMilli(now),
+                Instant.ofEpochMilli(prev)
+        );
+        System.out.println(duration.getSeconds());
+    }
 
     void parseDate() throws ParseException {
         String time = "Mon Oct 04 17:05:00 +0000 2021";

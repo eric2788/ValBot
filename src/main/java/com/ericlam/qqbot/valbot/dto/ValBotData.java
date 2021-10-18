@@ -22,6 +22,7 @@ public class ValBotData implements Serializable {
         public boolean verboseDelete = false;
         public boolean yearlyCheck = false;
         public boolean verbose = false;
+        public long lastChecked = -1L;
     }
 
     public static class BLiveSettings {

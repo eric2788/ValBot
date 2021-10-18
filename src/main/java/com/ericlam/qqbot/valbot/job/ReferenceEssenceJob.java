@@ -17,8 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import javax.swing.text.DateFormatter;
 import java.text.DateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,21 @@ public class ReferenceEssenceJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        var now = System.currentTimeMillis();
+
+        if (settings.lastChecked == -1){
+            settings.lastChecked = now;
+        }else{
+            var duration = Duration.between(
+                    Instant.ofEpochMilli(settings.lastChecked),
+                    Instant.ofEpochMilli(now));
+            if (duration.toDays() < 1){
+                return;
+            }else{
+                settings.lastChecked = now;
+            }
+
+        }
         LOGGER.debug("正在检查 {} 有无群精华消息被设置...", tellTime());
         var bot = container.robots.get(botId);
         if (bot == null) {

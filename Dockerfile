@@ -1,4 +1,4 @@
-FROM openjdk:16
+FROM openjdk:16-alpine
 
 COPY target/bot.jar .
 

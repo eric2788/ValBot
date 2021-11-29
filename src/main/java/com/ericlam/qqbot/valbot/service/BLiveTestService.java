@@ -21,13 +21,13 @@ public class BLiveTestService {
     public BLiveWebSocketData generateBroadcastData() {
         BLiveWebSocketData ws = new BLiveWebSocketData();
         ws.command = BLiveWebSocketData.CommandType.BOT_TESTING;
-        var data = new BLiveWebSocketData.BLiveData();
+        var data = new BLiveWebSocketData.BLiveInfo();
         data.uid = 123456;
         data.name = "测试用户_Official";
         data.title = "测试直播";
-        data.real_room = data.room = 123456789;
+        data.room_id = 123456789;
         data.cover = TEST_IMAGE_URL;
-        ws.data = data;
+        ws.live_info = data;
         return ws;
     }
 
@@ -42,8 +42,8 @@ public class BLiveTestService {
         sc.user_info.uname = "某个石油佬";
         sc.user_info.face = TEST_AVATAR;
         sc.user_info.name_color = "#d40b0b";
-        ws.data.content = new JSONObject();
-        ws.data.content.put("data", JSON.toJSON(sc));
+        ws.content = new JSONObject();
+        ws.content.put("data", JSON.toJSON(sc));
         return ws;
     }
 
@@ -59,7 +59,7 @@ public class BLiveTestService {
         info.set(2, userInfo);
         danmuContent.put("cmd", ws.command);
         danmuContent.put("info", info);
-        ws.data.content = danmuContent;
+        ws.content = danmuContent;
         return ws;
     }
 
@@ -70,7 +70,7 @@ public class BLiveTestService {
         data.put("uname", "臭DD"); // 用户名称
         data.put("uid", 123456); // uid
         interactWordContent.put("data", data);
-        ws.data.content = interactWordContent;
+        ws.content = interactWordContent;
         return ws;
     }
 }

@@ -34,14 +34,14 @@ public class DanmuHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle {
 
     @Override
     public void handle(Bot bot, long groupId, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONArray("info");
+        var data = ws.content.getJSONArray("info");
         var danmaku = data.getString(1);
         var uname = data.getJSONArray(2).getString(1);
         var uid = data.getJSONArray(2).getLong(0);
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.data.name, danmaku);
+        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.live_info.name, danmaku);
         String msg = MsgUtils.builder()
-                .text(uname).text(" 在 ").text(ws.data.name).text(" 的直播间发送了一条消息").text("\n")
+                .text(uname).text(" 在 ").text(ws.live_info.name).text(" 的直播间发送了一条消息").text("\n")
                 .text("弹幕: ").text(danmaku)
                 .build();
         bot.sendGroupMsg(groupId, msg, true);
@@ -49,20 +49,20 @@ public class DanmuHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle {
 
     @Override
     public void handle(GuildMessageChannel channel, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONArray("info");
+        var data = ws.content.getJSONArray("info");
         var danmaku = data.getString(1);
         var uname = data.getJSONArray(2).getString(1);
         var uid = data.getJSONArray(2).getLong(0);
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.data.name, danmaku);
+        logger.info("檢測到高亮用戶 {} 在 {} 的直播間發送了彈幕訊息: {}", uname, ws.live_info.name, danmaku);
         channel.createMessage(spec -> {
             spec.addEmbed( em ->{
-                em.setDescription(MessageFormat.format("[{0}]({1}) 在 {2} 的直播间发送了一条消息", uname, "https://space.bilibili.com/"+uid, ws.data.name));
+                em.setDescription(MessageFormat.format("[{0}]({1}) 在 {2} 的直播间发送了一条消息", uname, "https://space.bilibili.com/"+uid, ws.live_info.name));
                 em.setColor(randomColor);
                 em.addField("弹幕", danmaku, false);
             });
             spec.setComponents(
-                    ActionRow.of(Button.link("https://live.bilibili.com/"+ws.data.room, ReactionEmoji.unicode("\uD83D\uDEAA"), "点击围观"))
+                    ActionRow.of(Button.link("https://live.bilibili.com/"+ws.live_info.room_id, ReactionEmoji.unicode("\uD83D\uDEAA"), "点击围观"))
             );
         }).subscribe();
     }

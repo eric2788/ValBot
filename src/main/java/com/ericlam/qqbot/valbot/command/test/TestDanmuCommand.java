@@ -33,7 +33,7 @@ public class TestDanmuCommand  implements QQGroupCommand, DiscordGroupCommand {
     public void executeCommand(GuildMessageChannel channel, MessageCreateEvent event, List<String> args) {
         BLiveWebSocketData ws = testService.generateDanmuData();
         try {
-            danmuHandle.handle(channel, ws.data.room, ws);
+            danmuHandle.handle(channel, ws.live_info.room_id, ws);
         } catch (IOException e) {
             channel.createMessage("测试开播通知时出现错误: "+e.getMessage()).subscribe();
             e.printStackTrace();
@@ -44,7 +44,7 @@ public class TestDanmuCommand  implements QQGroupCommand, DiscordGroupCommand {
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
         BLiveWebSocketData ws = testService.generateDanmuData();
         try {
-            danmuHandle.handle(bot, event.getGroupId(), ws.data.room, ws);
+            danmuHandle.handle(bot, event.getGroupId(), ws.live_info.room_id, ws);
         } catch (IOException e) {
             bot.sendGroupMsg(event.getGroupId(), "测试开播通知时出现错误: "+e.getMessage(), true);
             e.printStackTrace();

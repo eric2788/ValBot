@@ -34,30 +34,30 @@ public class RoomEnterHandle implements QQBiliLiveHandle, DiscordBiliLiveHandle 
 
     @Override
     public void handle(Bot bot, long groupId, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONObject("data");
+        var data = ws.content.getJSONObject("data");
         var uname = data.getString("uname");
         var uid = data.getLong("uid");
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.data.name);
-        String msg = MsgUtils.builder().text("噔噔咚！").text("你所关注的用户 ").text(uname).text(" 进入了 ").text(ws.data.name).text(" 的直播间。").build();
+        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.live_info.name);
+        String msg = MsgUtils.builder().text("噔噔咚！").text("你所关注的用户 ").text(uname).text(" 进入了 ").text(ws.live_info.name).text(" 的直播间。").build();
         bot.sendGroupMsg(groupId, msg, true);
     }
 
     @Override
     public void handle(GuildMessageChannel channel, long room, BLiveWebSocketData ws) throws IOException {
-        var data = ws.data.content.getJSONObject("data");
+        var data = ws.content.getJSONObject("data");
         var uname = data.getString("uname");
         var uid = data.getLong("uid");
         if (liveService.isNotHighLightUser(uid) && !ws.command.equals(BLiveWebSocketData.CommandType.BOT_TESTING)) return;
-        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.data.name);
+        logger.info("高亮用戶 {} 進入了 {} 的直播間", uname, ws.live_info.name);
         channel.createMessage(spec -> {
             spec.addEmbed(em -> {
                 em.setColor(randomColor);
-                em.setDescription(MessageFormat.format("噔噔咚！ 你所关注的用户 [{0}]({1}) 进入了 {2} 的直播间。", uname, "https://space.bilibili.com/"+uid, ws.data.name));
-                em.addField("房间号", String.valueOf(ws.data.room), false);
+                em.setDescription(MessageFormat.format("噔噔咚！ 你所关注的用户 [{0}]({1}) 进入了 {2} 的直播间。", uname, "https://space.bilibili.com/"+uid, ws.live_info.name));
+                em.addField("房间号", String.valueOf(ws.live_info.room_id), false);
             });
             spec.setComponents(
-                    ActionRow.of(Button.link("https://live.bilibili.com/"+ws.data.room, ReactionEmoji.unicode("\uD83D\uDEAA"), "点击围观"))
+                    ActionRow.of(Button.link("https://live.bilibili.com/"+ws.live_info.room_id, ReactionEmoji.unicode("\uD83D\uDEAA"), "点击围观"))
             );
         }).subscribe();
     }

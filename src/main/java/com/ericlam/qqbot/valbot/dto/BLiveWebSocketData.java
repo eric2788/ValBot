@@ -16,34 +16,30 @@ public class BLiveWebSocketData implements Serializable {
         public static final String LIVE = "LIVE";
         public static final String INTERACT_WORD = "INTERACT_WORD";
 
-
         public static final String BOT_TESTING = "BOT_TESTING";
 
     }
 
     public String command;
-    public BLiveData data;
+    public BLiveInfo live_info;
+    public JSONObject content;
 
-    public static class BLiveData {
+    public static class BLiveInfo {
 
         public long uid;
         public String title;
         public String name;
         public String cover;
-        public long room;
-        public long real_room;
-        public JSONObject content;
+        public long room_id;
 
         @Override
         public String toString() {
-            return "BLiveData{" +
+            return "BLiveInfo{" +
                     "uid=" + uid +
                     ", title='" + title + '\'' +
                     ", name='" + name + '\'' +
                     ", cover='" + cover + '\'' +
-                    ", room=" + room +
-                    ", real_room=" + real_room +
-                    ", content=" + content +
+                    ", room_id=" + room_id +
                     '}';
         }
     }
@@ -53,7 +49,8 @@ public class BLiveWebSocketData implements Serializable {
     public String toString() {
         return "BLiveWebSocketData{" +
                 "command='" + command + '\'' +
-                ", data=" + data +
+                ", live_info=" + live_info +
+                ", content=" + content +
                 '}';
     }
 }

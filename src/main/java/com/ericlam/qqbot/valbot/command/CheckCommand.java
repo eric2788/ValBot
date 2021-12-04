@@ -30,11 +30,16 @@ public class CheckCommand implements QQGroupCommand { // 不支援 discord 的�
 
     @Override
     public void executeCommand(Bot bot, GroupMessageEvent event, List<String> args) {
-        List<String> users = ShiroUtils.getAtList(event.getRawMessage());
+        List<Long> users = ShiroUtils.getAtList(event.getArrayMsg());
         if (users.isEmpty()) {
             bot.sendGroupMsg(event.getGroupId(), "找不到用户", true);
+            return;
+        }else if (users.size() > 1) {
+            bot.sendGroupMsg(event.getGroupId(), "每次只能查询一个用户", true);
+            return;
         }
-        var member = qqBotService.validateNotError(bot.getGroupMemberInfo(event.getGroupId(), event.getUserId(), false)).getData();
+
+        var member = qqBotService.validateNotError(bot.getGroupMemberInfo(event.getGroupId(), users.get(0), false)).getData();
         StringBuilder builder = new StringBuilder();
         builder.append("QQ-ID: ").append(member.getUserId()).append("\n");
         builder.append("名称: ").append(member.getNickname()).append("\n");

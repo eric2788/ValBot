@@ -58,7 +58,7 @@ public class ForwardToDiscordFilter extends BotPlugin {
         }
         this.recursiveForward(bot, Flux.fromIterable(list))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(msg -> Flux.just(getMsgImgUrlList(msg.getContent()).toArray(String[]::new)))
+                .flatMap(msg -> Flux.fromIterable(ShiroUtils.getMsgImgUrlList(event.getArrayMsg())))
                 .distinct()
                 .concatMap(s -> client.getChannelById(Snowflake.of(discordConfig.getNsfwChannel()))
                         .ofType(GuildMessageChannel.class).flatMap(ch -> ch.createMessage(s)))
@@ -85,15 +85,5 @@ public class ForwardToDiscordFilter extends BotPlugin {
                     return Flux.empty();
                 });
 
-    }
-
-    public static List<String> getMsgImgUrlList(String msg) {
-        List<String> imgUrlList = new ArrayList<>();
-        for (String i : msg.split(ShiroUtilsEnum.CQ_CODE_SPLIT.getValue())) {
-            if (i.startsWith("image")) {
-                imgUrlList.add(RegexUtils.regex(ShiroUtilsEnum.GET_URL_REGEX.getValue(), i));
-            }
-        }
-        return imgUrlList;
     }
 }

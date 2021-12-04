@@ -39,7 +39,7 @@ public class AtResponse implements QQChatResponse, DiscordChatResponse {
     @Nullable
     @Override
     public String onQQResponse(GroupMessageEvent event) {
-        if (ShiroUtils.getAtList(event.getRawMessage()).contains(String.valueOf(qqBotId))){
+        if (ShiroUtils.getAtList(event.getArrayMsg()).contains(qqBotId)){
             return "啥？你说啥？我听不懂";
         }
         return null;

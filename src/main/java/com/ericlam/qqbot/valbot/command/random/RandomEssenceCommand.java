@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -61,8 +62,9 @@ public class RandomEssenceCommand implements QQGroupCommand, DiscordGroupCommand
                         return;
                     }
                     var message = list.get(this.random.nextInt(list.size()));
-                    logger.debug("正在发送随机群精华消息: {}", message.getRawMessage());
-                    bot.sendGroupMsg(event.getGroupId(), message.getRawMessage(), false);
+                    var msg = Optional.ofNullable(message.getRawMessage()).orElseGet(message::getMessage);
+                    logger.debug("正在发送随机群精华消息: {}", msg);
+                    bot.sendGroupMsg(event.getGroupId(), msg, false);
                 });
 
 

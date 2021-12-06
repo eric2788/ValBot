@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReferenceEssenceJob implements Job {
@@ -111,7 +112,10 @@ public class ReferenceEssenceJob implements Job {
                     LOGGER.error("获取消息时出现错误: ", ex);
                     bot.sendGroupMsg(groupId, "...加载失败: " + ex.getMessage(), false);
                 })
-                .subscribe(msg -> bot.sendGroupMsg(groupId, msg.getRawMessage(), false));
+                .subscribe(message -> {
+                    var msg = Optional.ofNullable(message.getRawMessage()).orElseGet(message::getMessage);
+                    bot.sendGroupMsg(groupId, msg, false);
+                });
     }
 
     private String toFormatString(long time) {

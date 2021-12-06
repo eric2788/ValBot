@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class ValGroupFilter extends BotPlugin {
 
@@ -60,10 +62,12 @@ public class ValGroupFilter extends BotPlugin {
     @Override
     public int onGroupMsgDeleteNotice(@NotNull Bot bot, @NotNull GroupMsgDeleteNoticeEvent event) {
         if (settings.verboseDelete) {
-            var msg = bot.getMsg((int) event.getMsgId());
-            if (msg.getRetcode() == -1) return MESSAGE_IGNORE;
+            var deletedMsg = bot.getMsg((int) event.getMsgId());
+            if (deletedMsg.getRetcode() == -1) return MESSAGE_IGNORE;
             bot.sendGroupMsg(event.getGroupId(), MsgUtils.builder().at(event.getOperatorId()).text(" 所撤回的消息:").build(), false);
-            bot.sendGroupMsg(event.getGroupId(), msg.getData().getRawMessage(), false);
+            var message = deletedMsg.getData();
+            var msg = Optional.ofNullable(message.getRawMessage()).orElseGet(message::getMessage);
+            bot.sendGroupMsg(event.getGroupId(), msg, false);
         }
         return MESSAGE_IGNORE;
     }

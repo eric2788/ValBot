@@ -33,10 +33,8 @@ public class TwitterListenCommand implements DiscordGroupCommand, QQGroupCommand
         service.fetchTwitterUser(username)
                 .flatMap(res -> {
                     String msg;
-                    if (!res.profile.exists){
+                    if (!res.exist){
                         msg = "此推特用户不存在。";
-                    }else if (res.profile.is_protected){
-                        msg = "此推特用户启用了保护贴文。";
                     }else{
                         msg = service.startListen(username) ? "开始监听推特用户(" + username + ")。" : "该用户(" + username + ")已经启动监听。";
                     }
@@ -65,10 +63,8 @@ public class TwitterListenCommand implements DiscordGroupCommand, QQGroupCommand
                     return Mono.empty();
                 }).subscribe(res -> {
                     String msg;
-                    if (!res.profile.exists){
+                    if (!res.exist){
                         msg = "此推特用户不存在。";
-                    }else if (res.profile.is_protected){
-                        msg = "此推特用户启用了保护贴文。";
                     }else{
                         msg = service.startListen(username) ? "开始监听推特用户(" + username + ")。" : "该用户(" + username + ")已经启动监听。";
                     }

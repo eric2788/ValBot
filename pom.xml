@@ -13,7 +13,7 @@
 
     <groupId>com.ericlam.qqbot</groupId>
     <artifactId>valqqbot</artifactId>
-    <version>1.03</version>
+    <version>1.04</version>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.mikuac</groupId>
             <artifactId>shiro</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <optional>true</optional>
         </dependency>
         <dependency>

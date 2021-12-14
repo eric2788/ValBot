@@ -109,8 +109,11 @@ public class TwitterService {
                     userExistInfo.put(username, response);
                     sink.success(response);
                 }else if (connection.getResponseCode() == 400) {
+                    /* too long 風控
                     InputStream stream = connection.getErrorStream();
-                    sink.error(new RuntimeException(mapper.readValue(stream, ErrorResponse.class).error[0]));
+                    ErrorResponse error = mapper.readValue(stream, ErrorResponse.class);
+                     */
+                    sink.error(new RuntimeException("無效的用戶ID格式"));
                 }
             } catch (IOException e) {
                 logger.error("Error while checking room is valid: ", e);
@@ -131,7 +134,7 @@ public class TwitterService {
 
         public static class ProfileData {
 
-            public int id;
+            public long id;
             public String name;
             public String username;
         }
